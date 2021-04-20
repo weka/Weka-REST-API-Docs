@@ -3850,6 +3850,16 @@
           "File system"
         ],
         "summary": "Get all file systems",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "force_fresh",
+            "schema": {
+              "type": "boolean"
+            },
+            "description": "Refresh the capacities to make sure they are most updated"
+          }
+        ],
         "operationId": "getFileSystems",
         "responses": {
           "200": {
@@ -3978,6 +3988,14 @@
               "type": "string"
             },
             "description": "file system uid"
+          },
+          {
+            "in": "query",
+            "name": "force_fresh",
+            "schema": {
+              "type": "boolean"
+            },
+            "description": "Refresh the capacities to make sure they are most updated"
           }
         ],
         "operationId": "getFileSystem",
@@ -4310,6 +4328,53 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/healthcheck": {
+      "get": {
+        "tags": [
+          "Health"
+        ],
+        "summary": "Check if API is alive",
+        "operationId": "getApiHealth",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ui/healthcheck": {
+      "get": {
+        "tags": [
+          "Health"
+        ],
+        "summary": "Check if UI is alive",
+        "operationId": "getUIHealth",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Error"
           }
         }
       }
