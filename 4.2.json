@@ -115,43 +115,6 @@
             "type": "number",
             "example": 4096
           },
-          "object_storages": {
-            "type": "array",
-            "deprecated": true,
-            "items": {
-              "type": "object",
-              "properties": {
-                "uid": {
-                  "type": "string",
-                  "example": "237"
-                },
-                "state": {
-                  "type": "string",
-                  "example": "ACTIVE"
-                },
-                "status": {
-                  "type": "string",
-                  "example": "UP"
-                },
-                "detachProgress": {
-                  "type": "number",
-                  "example": 0
-                },
-                "obsId": {
-                  "type": "string",
-                  "example": "ObjectStorageId<0>"
-                },
-                "mode": {
-                  "type": "string",
-                  "example": "WRITABLE"
-                },
-                "name": {
-                  "type": "string",
-                  "example": "OBS_1"
-                }
-              }
-            }
-          },
           "obs_buckets": {
             "type": "array",
             "items": {
