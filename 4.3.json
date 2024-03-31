@@ -10498,7 +10498,7 @@
                     },
                     "ips": {
                       "type": "array",
-                      "description": "IPs to be allocated to cores using the device. If not given - IPs may be set automatically according the interface's IPs, or taken from the default networking IPs pool (format - A.B.C.D-E.F.G.H or A.B.C.D-F.G.H or A.B.C.D-G.H or A.B.C.D-H)",
+                      "description": "IPs to be allocated to cores using the device. If not given - IPs may be set automatically according to the interface's IPs, or taken from the default networking IPs pool (format - A.B.C.D-E.F.G.H or A.B.C.D-F.G.H or A.B.C.D-G.H or A.B.C.D-H)",
                       "items": {
                         "type": "string",
                         "example": "172.31.4.107"
@@ -10507,16 +10507,16 @@
                     "gateway": {
                       "type": "string",
                       "example": "172.31.0.1",
-                      "description": "Default gateway IP. In AWS this value is auto-detected, otherwise the default data networking gateway will be used"
+                      "description": "Default gateway IP. In AWS, this value is auto-detected, otherwise, the default data networking gateway will be used"
                     },
                     "netmask": {
                       "type": "number",
                       "example": 20,
-                      "description": "Netmask in bits number. In AWS this value is auto-detected, otherwise the default data networking netmask will be used"
+                      "description": "Netmask in bits number. In AWS this value is auto-detected, otherwise, the default data networking netmask will be used"
                     },
                     "name": {
                       "type": "string",
-                      "description": "If empty, a name will be auto generated",
+                      "description": "If empty, a name will be auto-generated",
                       "example": "netdev01"
                     },
                     "apply_host": {
@@ -20823,4 +20823,4 @@
       }
     },
     "tags": []
-  }
+  },
