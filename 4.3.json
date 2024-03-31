@@ -2574,7 +2574,7 @@
             },
             "access_key_id": {
               "type": "string",
-              "example": "AKIA32X4U5TENMEYBPJE"
+              "example": "AKIA32X4U5THNMEYBJER"
             },
             "port": {
               "type": "number",
@@ -6235,7 +6235,7 @@
                     },
                     "container_operation": {
                       "type": "string",
-                      "description": "operatation to perform on container/s",
+                      "description": "operation to perform on containers",
                       "enum": [
                         "RESTART_CONTAINER"
                       ],
@@ -20823,4 +20823,4 @@
       }
     },
     "tags": []
-  },
+  }
