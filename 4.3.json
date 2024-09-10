@@ -2944,6 +2944,14 @@
             "fsName": {
               "type": "string",
               "example": "default"
+            },
+            "caseSensitivity": {
+              "type": "boolean",
+              "example": true
+            },
+            "namedStreams": {
+              "type": "boolean",
+              "example": true
             }
           }
         },
@@ -13483,6 +13491,11 @@
                             "description": "internal config FS",
                             "example": ".config_fs"
                           },
+                          "direct_io": {
+                            "type": "boolean",
+                            "description": "disable/enable direct-io for reads and writes",
+                            "example": true
+                          },
                           "locks": {
                             "type": "boolean",
                             "description": "disable/enable nfs Locking support",
@@ -14227,6 +14240,138 @@
                       "type": "boolean",
                       "description": "Reset LDAP configuration",
                       "example": false
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/nfs/ldapImport": {
+        "put": {
+          "tags": [
+            "NFS"
+          ],
+          "summary": "Import LDAP Configuration for NFS",
+          "operationId": "importNfsLdapConfiguration",
+          "responses": {
+            "200": {
+              "$ref": "#/components/responses/200"
+            },
+            "400": {
+              "$ref": "#/components/responses/400"
+            },
+            "401": {
+              "$ref": "#/components/responses/401"
+            },
+            "404": {
+              "$ref": "#/components/responses/404"
+            }
+          },
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ldap_server_type": {
+                      "type": "string",
+                      "description": "LDAP Server Type",
+                      "example": "OpenLDAP"
+                    },
+                    "ldap_server": {
+                      "type": "string",
+                      "description": "LDAP Server Name",
+                      "example": "ldap-server.test.wekalab.io"
+                    },
+                    "ldap_domain": {
+                      "type": "string",
+                      "description": "LDAP Server Domain",
+                      "example": "test.wekalab.io"
+                    },
+                    "sssd_conf_base64": {
+                      "type": "string",
+                      "description": "sssd.conf file contents in base64"
+                    },
+                    "idmapd_conf_base64": {
+                      "type": "string",
+                      "description": "idmapd.conf file contents in base64"
+                    },
+                    "verify": {
+                      "type": "boolean",
+                      "description": "Verify connectivity with LDAP Server",
+                      "example": false
+                    },
+                    "force": {
+                      "type": "boolean",
+                      "description": "Re-configure LDAP service",
+                      "example": false
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/nfs/ldapExport": {
+        "post": {
+          "tags": [
+            "NFS"
+          ],
+          "summary": "Export LDAP Configuration for NFS",
+          "operationId": "exportNfsLdapConfiguration",
+          "responses": {
+            "200": {
+              "description": "",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "type": "object",
+                        "properties": {
+                          "sssd_conf_base64": {
+                            "type": "string",
+                            "description": "sssd.conf file contents in base64"
+                          },
+                          "idmapd_conf_base64": {
+                            "type": "string",
+                            "description": "idmapd.conf file contents in base64"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "$ref": "#/components/responses/400"
+            },
+            "401": {
+              "$ref": "#/components/responses/401"
+            }
+          },
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ldap_server": {
+                      "type": "string",
+                      "description": "LDAP Server Name",
+                      "example": "ldap-server.test.wekalab.io"
+                    },
+                    "ldap_domain": {
+                      "type": "string",
+                      "description": "LDAP Server Domain",
+                      "example": "test.wekalab.io"
                     }
                   }
                 }
@@ -17562,6 +17707,10 @@
                             "type": "string",
                             "example": "ad"
                           },
+                          "symlink": {
+                            "type": "boolean",
+                            "description": "Enable or disable symbolic link (symlink) support for the SMB-W cluster."
+                          },
                           "smbw": {
                             "type": "boolean"
                           }
@@ -17669,6 +17818,10 @@
                         "desired",
                         "required"
                       ]
+                    },
+                    "symlink": {
+                      "type": "boolean",
+                      "description": "Enable or disable symbolic link (symlink) support for the SMB-W cluster."
                     },
                     "smbw": {
                       "type": "boolean",
@@ -18008,6 +18161,10 @@
                         "required"
                       ]
                     },
+                    "case_sensitivity": {
+                      "type": "boolean",
+                      "description": "Enable or disable case sensitivity for the specified SMB share. When enabled, the share distinguishes between files with the same name but different capitalization. This option applies exclusively to SMB-W cluster."
+                    },
                     "read_only": {
                       "type": "boolean",
                       "description": "Mount samba as read-only"
@@ -18029,6 +18186,10 @@
                         "type": "string",
                         "example": "string"
                       }
+                    },
+                    "named_streams": {
+                      "description": "Enables the use of Alternate Data Streams (ADS) on a specified SMB share.",
+                      "type": "boolean"
                     }
                   }
                 }
