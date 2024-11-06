@@ -3,7 +3,13 @@
     "info": {
       "title": "@weka-api",
       "version": "4.4",
-      "description": "<div>The WEKA system offers a RESTful API, a key feature for automating interactions with the WEKA system and integrating it seamlessly into your existing workflows or monitoring systems.<br>The API can be accessed at the /api/v2 URL on port 14000. To explore the API within the cluster, navigate to /api/v2/docs (for example, https://weka01:14000/api/v2/docs). <div style=\"margin-top: 15px;\">Important: WEKA uses 64-bit numbers, which requires careful handling when interacting with the API across different programming languages. In JavaScript, for instance, the \"json-bigint\" library is recommended.</div></div>"
+      "description": "<div><p>The WEKA system provides a RESTful API, enabling seamless automation and integration with your workflows and monitoring systems. Access the API at <code>/api/v2</code> on port 14000, and view API documentation within the cluster at <code>/api/v2/docs</code> (e.g., <a href="https://weka01:14000/api/v2/docs" target="_blank">https://weka01:14000/api/v2/docs</a>).</p>
+
+<div style="margin-top: 10px; margin-bottom: 10px; padding: 10px; border-left: 4px solid #f0ad4e; background-color: #fcf8e3;"><strong>Note:</strong> WEKA uses 64-bit numbers, so ensure appropriate handling across programming languages. In JavaScript, the <code>json-bigint</code> library is recommended for accurate number handling.
+</div>
+
+<p>For guidance on using the WEKA REST API, CLI command equivalents, and related concepts, visit <a href="https://docs.weka.io/getting-started-with-weka/weka-rest-api-and-equivalent-cli-commands" target="_blank">WEKA Documentation</a>.</p>
+</div>"
     },
     "servers": [
       {
@@ -226,6 +232,18 @@
               "type": "integer",
               "format": "int64",
               "example": 1073737728
+            },
+            "kms_key_identifier": {
+              "type": "string",
+              "example": "weka_fs_key1"
+            },
+            "kms_namespace": {
+              "type": "string",
+              "example": "namespace1"
+            },
+            "kms_role": {
+              "type": "string",
+              "example": "11bc2535-671a-63ad-c4f4-93b21afe8cd6"
             }
           }
         },
@@ -2952,6 +2970,10 @@
             "namedStreams": {
               "type": "boolean",
               "example": true
+            },
+            "mapAcls": {
+              "type": "string",
+              "example": "posix"
             }
           }
         },
@@ -3064,7 +3086,7 @@
               "type": "string",
               "example": "100%"
             },
-            "snapshotSize": {
+            "estReclaimableSize": {
               "type": "number",
               "example": 0
             }
@@ -8160,6 +8182,26 @@
                       "example": true,
                       "description": "Allow (insecurely) creating an encrypted filesystem without a KMS configured"
                     },
+                    "kms_vault_key_identifier": {
+                      "type": "string",
+                      "example": "weka_fs_key1",
+                      "description": "Key identifier which will be used to encrypt the filesystem key"
+                    },
+                    "kms_vault_namespace": {
+                      "type": "string",
+                      "example": "namespace1",
+                      "description": "Namespace on which the key is created"
+                    },
+                    "kms_vault_role_id": {
+                      "type": "string",
+                      "example": "d4b9fcf3-8fae-4f2d-b9ae-4899aff66fe8",
+                      "description": "Role Identifier which has access to the specified key"
+                    },
+                    "kms_vault_secret_id": {
+                      "type": "string",
+                      "example": "b99052e6-8bf1-4f0a-a3d0-969f90698d28",
+                      "description": "Secret identifier to access the key for the specified role"
+                    },
                     "data_reduction": {
                       "type": "boolean",
                       "example": true,
@@ -8312,6 +8354,31 @@
                       "type": "boolean",
                       "example": true,
                       "description": "Update audit status"
+                    },
+                    "kms_vault_key_identifier": {
+                      "type": "string",
+                      "example": "weka_fs_key1",
+                      "description": "Key identifier which will be used to encrypt the filesystem key"
+                    },
+                    "kms_vault_namespace": {
+                      "type": "string",
+                      "example": "namespace1",
+                      "description": "Namespace on which the key is created"
+                    },
+                    "kms_vault_role_id": {
+                      "type": "string",
+                      "example": "d4b9fcf3-8fae-4f2d-b9ae-4899aff66fe8",
+                      "description": "Role Identifier which has access to the specified key"
+                    },
+                    "kms_vault_secret_id": {
+                      "type": "string",
+                      "example": "b99052e6-8bf1-4f0a-a3d0-969f90698d28",
+                      "description": "Secret identifier to access the key for the specified role"
+                    },
+                    "use_cluster_kms_conf": {
+                      "type": "boolean",
+                      "example": true,
+                      "description": "Update the filesystem to use cluster KMS configuration"
                     }
                   }
                 }
@@ -9590,6 +9657,26 @@
                     "access_point": {
                       "type": "string",
                       "example": "111d3"
+                    },
+                    "kms_vault_key_identifier": {
+                      "type": "string",
+                      "example": "weka_fs_key1",
+                      "description": "Key identifier which will be used to encrypt the filesystem key"
+                    },
+                    "kms_vault_namespace": {
+                      "type": "string",
+                      "example": "namespace1",
+                      "description": "Namespace on which the key is created"
+                    },
+                    "kms_vault_role_id": {
+                      "type": "string",
+                      "example": "d4b9fcf3-8fae-4f2d-b9ae-4899aff66fe8",
+                      "description": "Role Identifier which has access to the specified key"
+                    },
+                    "kms_vault_secret_id": {
+                      "type": "string",
+                      "example": "b99052e6-8bf1-4f0a-a3d0-969f90698d28",
+                      "description": "Secret identifier to access the key for the specified role"
                     }
                   }
                 }
@@ -11753,6 +11840,10 @@
                               "base_url": {
                                 "type": "string",
                                 "example": "https://company.com:4000"
+                              },
+                              "auth_method": {
+                                "type": "string",
+                                "example": "RoleId/SecretId"
                               }
                             }
                           },
@@ -11825,6 +11916,22 @@
                     },
                     "ca_cert_pem": {
                       "type": "string"
+                    },
+                    "namespace": {
+                      "type": "string",
+                      "example": "namespace1"
+                    },
+                    "role_id": {
+                      "type": "string",
+                      "example": "d4b9fcf3-8fae-4f2d-b9ae-4899aff66fe8"
+                    },
+                    "secret_id": {
+                      "type": "string",
+                      "example": "b99052e6-8bf1-4f0a-a3d0-969f90698d28"
+                    },
+                    "convert_to_cluster_key": {
+                      "type": "boolean",
+                      "example": true
                     }
                   }
                 }
@@ -11912,6 +12019,16 @@
                     "new_key_uid": {
                       "type": "string",
                       "description": "(KMIP-only) Unique identifier for the new key to be used to wrap filesystem keys"
+                    },
+                    "rewrapAll": {
+                      "type": "boolean",
+                      "example": true,
+                      "description": "(Vault-only) Rewraps all filesystem including one with custom kms settings"
+                    },
+                    "convert_to_cluster_key": {
+                      "type": "boolean",
+                      "example": true,
+                      "description": "(Vault-only) Convert all filesystem custom settings to use cluster key"
                     }
                   }
                 }
@@ -12796,7 +12913,17 @@
                     "type": "object",
                     "properties": {
                       "data": {
-                        "$ref": "#/components/schemas/nfsPermission"
+                        "type": "object",
+                        "properties": {
+                          "exportId": {
+                            "type": "integer",
+                            "description": "Export Id"
+                          },
+                          "container_restart_needed": {
+                            "type": "boolean",
+                            "description": "Need to restart container"
+                          }
+                        }
                       }
                     }
                   }
@@ -12981,7 +13108,25 @@
           ],
           "responses": {
             "200": {
-              "$ref": "#/components/responses/200"
+              "description": "",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "type": "object",
+                        "properties": {
+                          "container_restart_needed": {
+                            "type": "boolean",
+                            "description": "Need to restart container"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
             },
             "400": {
               "$ref": "#/components/responses/400"
@@ -13433,12 +13578,12 @@
                       "description": "internal config FS",
                       "example": ".config_fs"
                     },
-                    "noacl": {
+                    "acl": {
                       "type": "boolean",
                       "description": "disable/enable acl",
-                      "example": false
+                      "example": true
                     },
-                    "acl_type": {
+                    "default_acl_type": {
                       "type": "string",
                       "description": "one of the types from the list - none, posix, nfsv4 and hybrid",
                       "example": "posix"
@@ -13521,12 +13666,12 @@
                             "description": "internal config FS",
                             "example": ".config_fs"
                           },
-                          "noacl": {
+                          "acl": {
                             "type": "boolean",
                             "description": "disable/enable acl",
-                            "example": false
+                            "example": true
                           },
-                          "acl_type": {
+                          "default_acl_type": {
                             "type": "string",
                             "description": "one of the types from the list - none, posix, nfsv4 and hybrid",
                             "example": "posix"
@@ -18295,6 +18440,16 @@
                     "named_streams": {
                       "description": "Enables the use of Alternate Data Streams (ADS) on a specified SMB share.",
                       "type": "boolean"
+                    },
+                    "map_acls": {
+                      "type": "string",
+                      "description": "Defines the ACL mapping type.",
+                      "enum": [
+                        "posix",
+                        "windows",
+                        "hybrid"
+                      ],
+                      "example": "posix"
                     }
                   }
                 }
