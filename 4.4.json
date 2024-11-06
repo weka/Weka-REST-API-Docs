@@ -3,7 +3,7 @@
     "info": {
         "title": "@weka-api",
         "version": "4.4",
-         "description": "<div>The WEKA system offers a RESTful API, a key feature for automating interactions with the WEKA system and integrating it seamlessly into your existing workflows or monitoring systems.<br><br>You can access the REST API at the /api/v2 URL on port 14000.<br>To explore the API within the cluster, navigate to /api/v2/docs (for example, https://weka01:14000/api/v2/docs).<br><br>For guidance on using the WEKA REST API, CLI command equivalents, and related concepts, visit https://docs.weka.io/getting-started-with-weka. <br><div style=\"margin-top: 15px;\">Important note: WEKA uses 64-bit numbers, so ensure appropriate handling across programming languages. In JavaScript, the \"json-bigint\" library is recommended for accurate number handling.</div></div>"
+         "description": "<div>The WEKA system offers a RESTful API, a key feature for automating interactions with the WEKA system and integrating it seamlessly into your existing workflows or monitoring systems. It can be accessed at the /api/v2 URL on port 14000.<br>To explore the API within the cluster, navigate to /api/v2/docs (for example, https://weka01:14000/api/v2/docs).<br><br>For guidance on using the REST API, CLI command equivalents, and related concepts, visit https://docs.weka.io/getting-started-with-weka.<br><br><div style=\"margin-top: 15px;\">Important note: WEKA uses 64-bit numbers, so ensure appropriate handling across programming languages. In JavaScript, the \"json-bigint\" library is recommended for accurate number handling.</div></div>"
     },
     "servers": [
         {
