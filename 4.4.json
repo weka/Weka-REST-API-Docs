@@ -3,8 +3,8 @@
     "info": {
         "title": "@weka-api",
         "version": "4.4",
-         "description": "<div>The WEKA system offers a RESTful API, a key feature for automating interactions with the WEKA system and integrating it seamlessly into your existing workflows or monitoring systems. It can be accessed at the /api/v2 URL on port 14000. To explore the REST API within the cluster, navigate to /api/v2/docs (for example, https://weka01:14000/api/v2/docs).<br><br>For guidance on using the REST API, CLI command equivalents, and related concepts, visit https://docs.weka.io/getting-started-with-weka/getting-started-with-weka-rest-api.<br> <br><div style=\"margin-top: 15px;\">Important note: WEKA uses 64-bit numbers, so ensure appropriate handling across programming languages. In JavaScript, the \"json-bigint\" library is recommended for accurate number handling.</div></div>"
-    },
+        "description": "The WEKA system provides a RESTful API, enabling efficient automation and integration into existing workflows or monitoring systems. To access the REST API documentation within the cluster, navigate to `/api/v2/docs` on port 14000 (e.g., `https://weka01:14000/api/v2/docs`).\n\nFor detailed guidance on using the REST API, including CLI command equivalents and related concepts, refer to the official documentation: [Getting Started with the WEKA REST API](https://docs.weka.io/getting-started-with-weka/getting-started-with-weka-rest-api).\n\n**Important Note:** WEKA utilizes 64-bit numbers. Ensure proper handling of these numbers in your programming language of choice. For JavaScript, it is recommended to use the `json-bigint` library to manage large numbers accurately."
+            },
     "servers": [
         {
             "url": "/api/v2"
@@ -650,6 +650,22 @@
                         "type": "number",
                         "nullable": true,
                         "example": 100
+                    },
+                    "requested_action": {
+                        "type": "string",
+                        "example": "STOP"
+                    },
+                    "requested_action_failure": {
+                        "type": "string",
+                        "example": "Cannot start draining because there are not enough failure domains with active drives to support 1 protection."
+                    },
+                    "requested_action_status": {
+                        "type": "string",
+                        "example": "NotEnoughDrivesForProtectionToDrain"
+                    },
+                    "requested_action_failure_time": {
+                        "type": "string",
+                        "example": "2021-03-10T09:47:04.927107Z"
                     }
                 }
             },
@@ -885,6 +901,22 @@
                         "type": "number",
                         "nullable": true,
                         "example": 100
+                    },
+                    "requested_action": {
+                        "type": "string",
+                        "example": "STOP"
+                    },
+                    "requested_action_failure": {
+                        "type": "string",
+                        "example": "Cannot start draining because there are not enough failure domains with active drives to support 1 protection."
+                    },
+                    "requested_action_status": {
+                        "type": "string",
+                        "example": "NotEnoughDrivesForProtectionToDrain"
+                    },
+                    "requested_action_failure_time": {
+                        "type": "string",
+                        "example": "2021-03-10T09:47:04.927107Z"
                     }
                 }
             },
@@ -2797,6 +2829,17 @@
                     }
                 }
             },
+            "userRole": {
+                "type": "string",
+                "enum": [
+                    "ClusterAdmin",
+                    "OrgAdmin",
+                    "ReadOnly",
+                    "Regular",
+                    "S3",
+                    "CSI"
+                ]
+            },
             "organization": {
                 "type": "object",
                 "properties": {
@@ -2827,6 +2870,12 @@
                     "uid": {
                         "type": "string",
                         "example": "uid_string"
+                    },
+                    "security_policies": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/securityPolicyInfo"
+                        }
                     }
                 }
             },
@@ -4437,6 +4486,10 @@
                     "retention": {
                         "type": "number",
                         "example": 0
+                    },
+                    "comment": {
+                        "type": "string",
+                        "example": "WEKAPP-XXXXX"
                     }
                 }
             },
@@ -4524,6 +4577,331 @@
                             "type": "string",
                             "example": "Distributed Quota"
                         }
+                    }
+                }
+            },
+            "securityPolicy": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "example": "remoteAdmins"
+                    },
+                    "action": {
+                        "type": "string",
+                        "example": "Allow",
+                        "enum": [
+                            "Allow",
+                            "Deny"
+                        ],
+                        "description": "Action to perform on a match"
+                    },
+                    "description": {
+                        "type": "string",
+                        "example": "Admin access for remote admin network"
+                    },
+                    "id": {
+                        "type": "string",
+                        "example": "SecurityPolicy<5>"
+                    },
+                    "roles": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "example": "ClusterAdmin",
+                            "description": "User roles to which the policy applies"
+                        }
+                    },
+                    "ips": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "example": "10.1.4.0/24",
+                            "description": "IP address range, as IP, IP/CIDR, or IP1-IP2"
+                        }
+                    },
+                    "ref_count": {
+                        "type": "number",
+                        "example": 1,
+                        "description": "Number of objects to which policy is attached"
+                    },
+                    "uid": {
+                        "type": "string",
+                        "example": "fe98008e-397d-227b-a095-577783714006"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-08-26T07:14:14.123Z",
+                        "description": "Creation time of the policy"
+                    },
+                    "created_by": {
+                        "type": "string",
+                        "example": "alex-admin",
+                        "description": "Username who created the policy"
+                    },
+                    "modified_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-09-26T07:56:41.818Z",
+                        "description": "Time when policy was last modified"
+                    },
+                    "modified_by": {
+                        "type": "string",
+                        "example": "alex-admin",
+                        "description": "Username who last modified the policy"
+                    }
+                }
+            },
+            "securityPolicyInfo": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "example": "remoteAdmins"
+                    },
+                    "id": {
+                        "type": "string",
+                        "example": "SecurityPolicy<5>"
+                    },
+                    "uid": {
+                        "type": "string",
+                        "example": "fe98008e-397d-227b-a095-577783714006"
+                    }
+                }
+            },
+            "snapshotLocatorInfoDetails": {
+                "type": "object",
+                "properties": {
+                    "fs_name": {
+                        "type": "string",
+                        "example": "fs1"
+                    },
+                    "guid": {
+                        "type": "string",
+                        "example": "d758af08-f03d-4acf-b289-35433cf433f6"
+                    },
+                    "snap_view_id": {
+                        "type": "string",
+                        "example": "SnapViewId<1>"
+                    },
+                    "min_weka_version": {
+                        "type": "string",
+                        "example": "4.4.0"
+                    },
+                    "access_point": {
+                        "type": "string",
+                        "example": "@GMT-2024.10.14-09.23.51"
+                    },
+                    "fs_ssd_capacity": {
+                        "type": "number",
+                        "example": 10000003072
+                    },
+                    "root_inode_id": {
+                        "type": "string",
+                        "example": "InodeId<304574939398144>"
+                    },
+                    "has_legacy_v34_data": {
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "orig_fq_fs_id": {
+                        "type": "object",
+                        "properties": {
+                            "guid": {
+                                "type": "string",
+                                "example": "d758af08-f03d-4acf-b289-35433cf433f6"
+                            },
+                            "fsId": {
+                                "type": "string",
+                                "example": "FSId<8>"
+                            }
+                        }
+                    },
+                    "snapshot_name": {
+                        "type": "string",
+                        "example": "s1"
+                    },
+                    "snap_layers_num": {
+                        "type": "number",
+                        "example": 1
+                    },
+                    "deprecation_weka_version": {
+                        "type": "string",
+                        "example": "INVALID"
+                    },
+                    "is_encrypted": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "customizationKmsType": {
+                        "type": "string",
+                        "example": "unset"
+                    },
+                    "kmsNamespace": {
+                        "type": "string",
+                        "example": ""
+                    },
+                    "kmsKeyName": {
+                        "type": "string",
+                        "example": ""
+                    },
+                    "stow_version": {
+                        "type": "string",
+                        "example": "StowVersion<11>"
+                    },
+                    "fs_max_files": {
+                        "type": "number",
+                        "example": 0
+                    },
+                    "num_unique_guids": {
+                        "type": "number",
+                        "example": 1
+                    },
+                    "snap_layers_info": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "indexInParent_deprecated": {
+                                    "type": "number",
+                                    "example": 0
+                                },
+                                "guid": {
+                                    "type": "string",
+                                    "example": "d758af08-f03d-4acf-b289-35433cf433f6"
+                                },
+                                "freezeTimestamp": {
+                                    "type": "object",
+                                    "properties": {
+                                        "nanosecs": {
+                                            "type": "object",
+                                            "properties": {
+                                                "val": {
+                                                    "type": "number",
+                                                    "example": 246200232
+                                                }
+                                            }
+                                        },
+                                        "secs": {
+                                            "type": "object",
+                                            "properties": {
+                                                "val": {
+                                                    "type": "number",
+                                                    "example": 1728897831
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                "squashDepth": {
+                                    "type": "string",
+                                    "example": "SnapDepth<INVALID>"
+                                },
+                                "origFqSnapLayerId": {
+                                    "type": "object",
+                                    "properties": {
+                                        "guid": {
+                                            "type": "string",
+                                            "example": "d758af08-f03d-4acf-b289-35433cf433f6"
+                                        },
+                                        "snapLayerId": {
+                                            "type": "string",
+                                            "example": "SnapLayerId<9>"
+                                        }
+                                    }
+                                },
+                                "capacity": {
+                                    "type": "object",
+                                    "properties": {
+                                        "metadata": {
+                                            "type": "number",
+                                            "example": 0
+                                        },
+                                        "data": {
+                                            "type": "number",
+                                            "example": 1
+                                        }
+                                    }
+                                },
+                                "bucketsNum": {
+                                    "type": "number",
+                                    "example": 72
+                                },
+                                "timestamp": {
+                                    "type": "object",
+                                    "properties": {
+                                        "nanosecs": {
+                                            "type": "object",
+                                            "properties": {
+                                                "val": {
+                                                    "type": "number",
+                                                    "example": 10
+                                                }
+                                            }
+                                        },
+                                        "secs": {
+                                            "type": "object",
+                                            "properties": {
+                                                "val": {
+                                                    "type": "number",
+                                                    "example": 0
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                "snapLayerId": {
+                                    "type": "string",
+                                    "example": "SnapLayerId<9>"
+                                },
+                                "isForked": {
+                                    "type": "string",
+                                    "example": "no"
+                                },
+                                "generation": {
+                                    "type": "string",
+                                    "example": "SnapLayerStowGeneration<0>"
+                                },
+                                "depth": {
+                                    "type": "string",
+                                    "example": "SnapDepth<0>"
+                                },
+                                "origLastMergedParent": {
+                                    "type": "object",
+                                    "properties": {
+                                        "guid": {
+                                            "type": "string",
+                                            "example": "d758af08-f03d-4acf-b289-35433cf433f6"
+                                        },
+                                        "snapLayerId": {
+                                            "type": "string",
+                                            "example": "SnapLayerId<9>"
+                                        }
+                                    }
+                                },
+                                "stowVersion": {
+                                    "type": "string",
+                                    "example": "StowVersion<11>"
+                                }
+                            }
+                        }
+                    },
+                    "total_ssd_metadata_size": {
+                        "type": "number",
+                        "example": 4096
+                    },
+                    "fs_total_capacity": {
+                        "type": "number",
+                        "example": 10000003072
+                    },
+                    "total_size": {
+                        "type": "number",
+                        "example": 4096
+                    },
+                    "fs_id": {
+                        "type": "string",
+                        "example": "FSId<8>"
                     }
                 }
             }
@@ -9862,6 +10240,302 @@
                 }
             ]
         },
+        "/fileSystems/{uid}/securityPolicy": {
+            "delete": {
+                "tags": [
+                    "Filesystem"
+                ],
+                "summary": "Remove all security policies from filesystem",
+                "operationId": "resetFsSecurityPolicies",
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/securityPolicyInfo"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/401"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/404"
+                    }
+                },
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "uid",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid",
+                            "example": "00000000-0000-0000-0000-000000000000"
+                        },
+                        "description": "filesystem uid"
+                    }
+                ]
+            },
+            "get": {
+                "tags": [
+                    "Filesystem"
+                ],
+                "summary": "Get security policies for filesystem",
+                "operationId": "getFsSecurityPolicies",
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/securityPolicyInfo"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/401"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/404"
+                    }
+                },
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "uid",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid",
+                            "example": "00000000-0000-0000-0000-000000000000"
+                        },
+                        "description": "filesystem uid"
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Filesystem"
+                ],
+                "summary": "Set filesystem security policies",
+                "operationId": "setFsSecurityPolicies",
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/securityPolicyInfo"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/401"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/404"
+                    }
+                },
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "policies": {
+                                        "description": "Security policies to set for filesystem",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "format": "uuid",
+                                            "example": "00000000-0000-0000-0000-000000000000"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "uid",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid",
+                            "example": "00000000-0000-0000-0000-000000000000"
+                        },
+                        "description": "filesystem uid"
+                    }
+                ]
+            }
+        },
+        "/fileSystems/{uid}/securityPolicy/attach": {
+            "post": {
+                "tags": [
+                    "Filesystem"
+                ],
+                "summary": "Attach security policies to filesystem",
+                "operationId": "attachFsSecurityPolicies",
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/securityPolicyInfo"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/401"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/404"
+                    }
+                },
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "policies": {
+                                        "description": "Security policies to set for filesystem",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "format": "uuid",
+                                            "example": "00000000-0000-0000-0000-000000000000"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "uid",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "description": "filesystem uid",
+                        "example": "00000000-0000-0000-0000-000000000000"
+                    }
+                ]
+            }
+        },
+        "/fileSystems/{uid}/securityPolicy/detach": {
+            "post": {
+                "tags": [
+                    "Filesystem"
+                ],
+                "summary": "Detach security policies from filesystem",
+                "operationId": "detachFsSecurityPolicies",
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/securityPolicyInfo"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/401"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/404"
+                    }
+                },
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "policies": {
+                                        "description": "Security policies to set for filesystem",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "format": "uuid",
+                                            "example": "00000000-0000-0000-0000-000000000000"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "uid",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "description": "filesystem uid",
+                        "example": "00000000-0000-0000-0000-000000000000"
+                    }
+                ]
+            }
+        },
         "/fileSystemGroups": {
             "get": {
                 "tags": [
@@ -13582,6 +14256,11 @@
                                         "description": "one of the types from the list - none, posix, nfsv4 and hybrid",
                                         "example": "posix"
                                     },
+                                    "extended_stats": {
+                                        "type": "boolean",
+                                        "description": "enable/disable NFS stats collection for each client and permission",
+                                        "example": true
+                                    },
                                     "lockmgr_port": {
                                         "type": "number",
                                         "description": "the alternate port for the nfs lock manager",
@@ -13673,6 +14352,11 @@
                                                 "direct_io": {
                                                     "type": "boolean",
                                                     "description": "disable/enable direct-io for reads and writes",
+                                                    "example": true
+                                                },
+                                                "extended_stats": {
+                                                    "type": "boolean",
+                                                    "description": "enable/disable NFS stats collection for each client and permission",
                                                     "example": true
                                                 },
                                                 "locks": {
@@ -15690,7 +16374,7 @@
                 "tags": [
                     "Organization"
                 ],
-                "summary": "update organization",
+                "summary": "Update organization",
                 "operationId": "updateOrganization",
                 "responses": {
                     "200": {
@@ -15812,6 +16496,301 @@
                         }
                     }
                 }
+            }
+        },
+        "/organizations/{uid}/securityPolicy": {
+            "delete": {
+                "tags": [
+                    "Organization"
+                ],
+                "summary": "Remove all security policies from organization",
+                "operationId": "resetOrganizationSecurityPolicies",
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/securityPolicyInfo"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/401"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/404"
+                    }
+                },
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "uid",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid",
+                            "example": "00000000-0000-0000-0000-000000000000"
+                        },
+                        "description": "organization uid"
+                    }
+                ]
+            },
+            "get": {
+                "tags": [
+                    "Organization"
+                ],
+                "summary": "Get security policies for  organization",
+                "operationId": "getOrganizationSecurityPolicies",
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/securityPolicyInfo"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/401"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/404"
+                    }
+                },
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "uid",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid",
+                            "example": "00000000-0000-0000-0000-000000000000"
+                        },
+                        "description": "organization uid"
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Organization"
+                ],
+                "summary": "Set organization security policies",
+                "operationId": "setOrganizationSecurityPolicies",
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/securityPolicyInfo"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/401"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/404"
+                    }
+                },
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "policies": {
+                                        "description": "Security policies to set for organization",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "format": "uuid",
+                                            "example": "00000000-0000-0000-0000-000000000000"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "uid",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid",
+                            "example": "00000000-0000-0000-0000-000000000000"
+                        },
+                        "description": "organization uid"
+                    }
+                ]
+            }
+        },
+        "/organizations/{uid}/securityPolicy/attach": {
+            "post": {
+                "tags": [
+                    "Organization"
+                ],
+                "summary": "Attach security policies to organization",
+                "operationId": "attachOrganizationSecurityPolicies",
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/securityPolicyInfo"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/401"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/404"
+                    }
+                },
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "policies": {
+                                        "description": "Security policies to set for organization",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "format": "uuid",
+                                            "example": "00000000-0000-0000-0000-000000000000"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "uid",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "description": "organization uid",
+                        "example": "00000000-0000-0000-0000-000000000000"
+                    }
+                ]
+            }
+        },
+        "/organizations/{uid}/securityPolicy/detach": {
+            "post": {
+                "tags": [
+                    "Organization"
+                ],
+                "summary": "Detach security policies from organization",
+                "operationId": "detachOrganizationSecurityPolicies",
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/securityPolicyInfo"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/401"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/404"
+                    }
+                },
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "policies": {
+                                        "description": "Security policies to set for organization",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "format": "uuid",
+                                            "example": "00000000-0000-0000-0000-000000000000"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "uid",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "description": "organization uid"
+                    }
+                ]
             }
         },
         "/processes": {
@@ -19316,6 +20295,785 @@
                 }
             }
         },
+        "/security/policies": {
+            "post": {
+                "tags": [
+                    "Security"
+                ],
+                "summary": "Create a security policy",
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/securityPolicy"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/400"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/401"
+                    }
+                },
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "description": "Name of security policy to create",
+                                        "example": "admin_hosts"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "description": "Human-readable description",
+                                        "example": "Allows admin acccess from admin workstations"
+                                    },
+                                    "action": {
+                                        "type": "string",
+                                        "description": "What to do when matching (default is Allow)",
+                                        "enum": [
+                                            "Allow",
+                                            "Deny"
+                                        ]
+                                    },
+                                    "role": {
+                                        "type": "array",
+                                        "description": "User roles to match for API access (empty for all)",
+                                        "items": {
+                                            "$ref": "#/components/schemas/userRole"
+                                        }
+                                    },
+                                    "ip": {
+                                        "type": "array",
+                                        "description": "IP address ranges for restricted access (can be IP, IP/cidr, or IP1-IP2)",
+                                        "items": {
+                                            "type": "string",
+                                            "example": "192.168.2.0/21"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "get": {
+                "summary": "List all security policies",
+                "operationId": "listSecPolicies",
+                "tags": [
+                    "Security"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of policies",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/securityPolicy"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/401"
+                    }
+                }
+            }
+        },
+        "/security/policies/{policy}": {
+            "get": {
+                "summary": "List a security policy",
+                "operationId": "getSecPolicy",
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/securityPolicy"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/401"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/404"
+                    }
+                },
+                "tags": [
+                    "Security"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "policy",
+                        "description": "Security policy ID",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid",
+                            "example": "00000000-0000-0000-0000-000000000000"
+                        },
+                        "required": true
+                    }
+                ]
+            },
+            "delete": {
+                "summary": "Delete security policy",
+                "operationId": "deleteSecPolicy",
+                "responses": {
+                    "200": {
+                        "$ref": "#/components/responses/200"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/401"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/404"
+                    }
+                },
+                "tags": [
+                    "Security"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "policy",
+                        "description": "Security policy ID",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid",
+                            "example": "00000000-0000-0000-0000-000000000000"
+                        },
+                        "required": true
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "Security"
+                ],
+                "summary": "Patch (modify) a security policy",
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/securityPolicy"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/400"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/401"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/404"
+                    }
+                },
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "policy",
+                        "description": "Security policy ID",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid",
+                            "example": "00000000-0000-0000-0000-000000000000"
+                        },
+                        "required": true
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "description": "New name of security policy",
+                                        "example": "admin_hosts"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "description": "Human-readable description",
+                                        "example": "Allows admin acccess from admin workstations"
+                                    },
+                                    "action": {
+                                        "type": "string",
+                                        "description": "What to do when matching (default is Allow)",
+                                        "enum": [
+                                            "Allow",
+                                            "Deny"
+                                        ]
+                                    },
+                                    "role": {
+                                        "type": "array",
+                                        "description": "Replace user roles to match for API access (empty for all)",
+                                        "items": {
+                                            "$ref": "#/components/schemas/userRole"
+                                        }
+                                    },
+                                    "add_role": {
+                                        "type": "array",
+                                        "description": "Add user roles to match for API access",
+                                        "items": {
+                                            "$ref": "#/components/schemas/userRole"
+                                        }
+                                    },
+                                    "remove_role": {
+                                        "type": "array",
+                                        "description": "Remove user roles to match for API access",
+                                        "items": {
+                                            "$ref": "#/components/schemas/userRole"
+                                        }
+                                    },
+                                    "ip": {
+                                        "type": "array",
+                                        "description": "Replace IP address ranges for access (can be IP, IP/cidr, or IP1-IP2)",
+                                        "items": {
+                                            "type": "string",
+                                            "example": "10.1.4.0/24"
+                                        }
+                                    },
+                                    "add_ip": {
+                                        "type": "array",
+                                        "description": "IP address ranges to add for to policy",
+                                        "items": {
+                                            "type": "string",
+                                            "example": "10.1.5.10-10.1.5.22"
+                                        }
+                                    },
+                                    "remove_ip": {
+                                        "type": "array",
+                                        "description": "IP address ranges to remove from policy",
+                                        "items": {
+                                            "type": "string",
+                                            "example": "10.1.4.0/24"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/security/policies/{policy}/duplicate": {
+            "post": {
+                "tags": [
+                    "Security"
+                ],
+                "summary": "Duplicate a security policy",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "policy",
+                        "description": "Security policy ID",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid",
+                            "example": "00000000-0000-0000-0000-000000000000"
+                        },
+                        "required": true
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "description": "New name of security policy",
+                                        "example": "admin_hosts"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/securityPolicy"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/401"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/404"
+                    }
+                }
+            }
+        },
+        "/security/policies/test": {
+            "get": {
+                "tags": [
+                    "Security"
+                ],
+                "summary": "Test effect of security policies",
+                "operationId": "testJoinSecurityPolicies",
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "action": {
+                                                    "description": "result of test",
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "Allow",
+                                                        "Deny"
+                                                    ]
+                                                },
+                                                "explicit": {
+                                                    "description": "whether result was explicitly matched or not",
+                                                    "type": "boolean"
+                                                },
+                                                "policy": {
+                                                    "$ref": "#/components/schemas/securityPolicyInfo"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/400"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/401"
+                    }
+                },
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "policies",
+                        "description": "security policies to test",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "format": "uuid"
+                            }
+                        },
+                        "style": "form",
+                        "explode": true
+                    },
+                    {
+                        "in": "query",
+                        "name": "ip",
+                        "required": true,
+                        "description": "IP address to simulate accessing from",
+                        "schema": {
+                            "type": "string",
+                            "oneOf": [
+                                {
+                                    "format": "ipv4"
+                                },
+                                {
+                                    "format": "ipv6"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "role",
+                        "description": "simulate API access with this user role",
+                        "required": false,
+                        "schema": {
+                            "$ref": "#/components/schemas/userRole"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "join",
+                        "description": "simulate cluster joining for test",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    }
+                ]
+            }
+        },
+        "/security/join/{mode}/securityPolicy": {
+            "delete": {
+                "tags": [
+                    "Security"
+                ],
+                "summary": "Remove all security policies from cluster join list",
+                "operationId": "resetJoinSecurityPolicies",
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/securityPolicyInfo"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/401"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/404"
+                    }
+                },
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "mode",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "backend",
+                                "client"
+                            ]
+                        },
+                        "description": "cluster join mode"
+                    }
+                ]
+            },
+            "get": {
+                "tags": [
+                    "Security"
+                ],
+                "summary": "Get security policies for joining cluster",
+                "operationId": "getJoinSecurityPolicies",
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/securityPolicyInfo"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/401"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/404"
+                    }
+                },
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "mode",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "backend",
+                                "client"
+                            ]
+                        },
+                        "description": "cluster join mode"
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Security"
+                ],
+                "summary": "Set cluster join security policies",
+                "operationId": "setJoinSecurityPolicies",
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/securityPolicyInfo"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/401"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/404"
+                    }
+                },
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "policies": {
+                                        "description": "Security policies to set for cluster joining",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "format": "uuid",
+                                            "example": "00000000-0000-0000-0000-000000000000"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "mode",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "backend",
+                                "client"
+                            ]
+                        },
+                        "description": "cluster join mode"
+                    }
+                ]
+            }
+        },
+        "/security/join/{mode}/securityPolicy/attach": {
+            "post": {
+                "tags": [
+                    "Security"
+                ],
+                "summary": "Attach security policies to cluster join list",
+                "operationId": "attachJoinSecurityPolicies",
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/securityPolicyInfo"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/401"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/404"
+                    }
+                },
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "policies": {
+                                        "description": "Security policies to set for cluster joining",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "format": "uuid",
+                                            "example": "00000000-0000-0000-0000-000000000000"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "mode",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "backend",
+                                "client"
+                            ]
+                        },
+                        "description": "cluster join mode"
+                    }
+                ]
+            }
+        },
+        "/security/join/{mode}/securityPolicy/detach": {
+            "post": {
+                "tags": [
+                    "Security"
+                ],
+                "summary": "Detach security policies from cluster join list",
+                "operationId": "detachJoinSecurityPolicies",
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/securityPolicyInfo"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/401"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/404"
+                    }
+                },
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "policies": {
+                                        "description": "Security policies",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "format": "uuid",
+                                            "example": "00000000-0000-0000-0000-000000000000"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "mode",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "backend",
+                                "client"
+                            ]
+                        },
+                        "description": "cluster join mode"
+                    }
+                ]
+            }
+        },
         "/servers": {
             "get": {
                 "tags": [
@@ -19918,6 +21676,63 @@
                         "description": "snapshot uid"
                     }
                 ]
+            }
+        },
+        "/snapshots/locatorInfo": {
+            "post": {
+                "tags": [
+                    "Snapshot"
+                ],
+                "summary": "get the detailed Information for the snapshot from object store",
+                "operationId": "locatorInfo",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "object_storage",
+                                    "locator"
+                                ],
+                                "properties": {
+                                    "object_storage": {
+                                        "type": "string",
+                                        "description": "Object Store name",
+                                        "example": "obs1"
+                                    },
+                                    "locator": {
+                                        "type": "string",
+                                        "description": "Locator",
+                                        "example": "bba696fb/d/s/4/spec/fc35-4d51-96b6-028488d349dc"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/snapshotLocatorInfoDetails"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/400"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/401"
+                    }
+                }
             }
         },
         "/stats": {
@@ -21446,6 +23261,10 @@
                                     "override_existing_period": {
                                         "type": "boolean",
                                         "example": true
+                                    },
+                                    "comment": {
+                                        "type": "string",
+                                        "example": "WEKAPP-XXXXX"
                                     }
                                 }
                             }
@@ -21622,15 +23441,8 @@
                                         "example": "StrongPass111"
                                     },
                                     "role": {
-                                        "type": "string",
-                                        "description": "The role of the new user",
-                                        "enum": [
-                                            "ClusterAdmin",
-                                            "OrgAdmin",
-                                            "ReadOnly",
-                                            "Regular",
-                                            "S3"
-                                        ]
+                                        "$ref": "#/components/schemas/userRole",
+                                        "description": "The role of the new user"
                                     },
                                     "posix_uid": {
                                         "type": "number",
@@ -21725,15 +23537,8 @@
                                 "type": "object",
                                 "properties": {
                                     "role": {
-                                        "type": "string",
-                                        "description": "The role of the new user",
-                                        "enum": [
-                                            "ClusterAdmin",
-                                            "OrgAdmin",
-                                            "ReadOnly",
-                                            "Regular",
-                                            "S3"
-                                        ]
+                                        "$ref": "#/components/schemas/userRole",
+                                        "description": "The role of the new user"
                                     },
                                     "posix_uid": {
                                         "type": "number",
