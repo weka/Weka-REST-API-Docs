@@ -3,7 +3,7 @@
     "info": {
       "title": "@weka-api",
       "version": "4.4",
-      "description": "<div>The WEKA system offers a RESTful API, a key feature for automating interactions with the WEKA system and integrating it seamlessly into your existing workflows or monitoring systems.<br>The API can be accessed at the /api/v2 URL on port 14000. To explore the API within the cluster, navigate to /api/v2/docs (for example, https://weka01:14000/api/v2/docs). <div style=\"margin-top: 15px;\">Important: WEKA uses 64-bit numbers, which requires careful handling when interacting with the API across different programming languages. In JavaScript, for instance, the \"json-bigint\" library is recommended.</div></div>"
+      "description": "<div>The WEKA system provides a RESTful API, enabling efficient automation and integration into existing workflows or monitoring systems. To access the REST API documentation within the cluster, navigate to <code>/api/v2/docs</code> on port 14000 (e.g., <code>https://weka01:14000/api/v2/docs</code>).<br><br>For detailed guidance on using the REST API, including CLI command equivalents and related concepts, refer to the official documentation: <a href=\"https://docs.weka.io/getting-started-with-weka/getting-started-with-weka-rest-api\">Getting Started with the WEKA REST API</a>.<br><br><div style=\"margin-top: 15px;\"><b>Important Note:</b> WEKA uses 64-bit numbers. Ensure proper handling of these numbers in your programming language of choice. For JavaScript, it is recommended to use the <code>json-bigint</code> library to manage large numbers accurately.</div></div>"
     },
     "servers": [
       {
@@ -213,7 +213,7 @@
               "type": "boolean",
               "example": true
             },
-            "data_reduction_factor": {
+            "data_reduction_ratio": {
               "type": "number",
               "example": 5.2
             },
@@ -2702,6 +2702,14 @@
               "type": "boolean",
               "example": true
             },
+            "data_storage_class": {
+              "type": "string",
+              "example": "INTELLIGENT_TIERING"
+            },
+            "metadata_storage_class": {
+              "type": "string",
+              "example": "INTELLIGENT_TIERING"
+            },
             "unknown_nodes": {
               "type": "array",
               "items": {
@@ -4650,6 +4658,11 @@
               "type": "string",
               "example": "alex-admin",
               "description": "Username who last modified the policy"
+            },
+            "read_only": {
+              "type": "boolean",
+              "example": false,
+              "description": "The policy only allows read-only mounts"
             }
           }
         },
@@ -5086,6 +5099,10 @@
         "snapshotPolicyInfo": {
           "type": "object",
           "properties": {
+            "id": {
+              "type": "string",
+              "example": "SnapPolicyId<1>"
+            },
             "name": {
               "type": "string",
               "example": "Backup"
@@ -5245,6 +5262,98 @@
                   "example": "local"
                 }
               }
+            }
+          }
+        },
+        "cookielist": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "example": "8-0-0-6-5-0-0"
+          }
+        },
+        "diff_list": {
+          "type": "object",
+          "properties": {
+            "results_count": {
+              "type": "number",
+              "example": 1
+            },
+            "results": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "inode": {
+                    "type": "string",
+                    "example": "InodeContext<4270850748147367937>"
+                  },
+                  "parent_inode": {
+                    "type": "string",
+                    "example": "InodeContext<55996090941441>"
+                  },
+                  "op_type": {
+                    "type": "string",
+                    "example": "FILE_CREATE"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/dir1/dir2/file1"
+                  },
+                  "prev_path": {
+                    "type": "string",
+                    "example": null
+                  },
+                  "renamed": {
+                    "type": "boolean",
+                    "example": false
+                  },
+                  "size": {
+                    "type": "number",
+                    "example": 0
+                  },
+                  "mode": {
+                    "type": "number",
+                    "example": 33188
+                  },
+                  "modify_time_secs": {
+                    "type": "number",
+                    "example": 1740744251
+                  },
+                  "access_time_secs": {
+                    "type": "number",
+                    "example": 1740744251
+                  },
+                  "change_time_secs": {
+                    "type": "number",
+                    "example": 1740744251
+                  },
+                  "blocks": {
+                    "type": "number",
+                    "example": 0
+                  },
+                  "rdev": {
+                    "type": "number",
+                    "example": 0
+                  },
+                  "uid": {
+                    "type": "number",
+                    "example": 0
+                  },
+                  "gid": {
+                    "type": "number",
+                    "example": 0
+                  },
+                  "nlinks": {
+                    "type": "number",
+                    "example": 0
+                  }
+                }
+              }
+            },
+            "next_resume_token": {
+              "type": "string",
+              "example": "8-1-A72EAA20-3-2-0-0"
             }
           }
         }
@@ -5508,6 +5617,15 @@
           ],
           "summary": "Get all alerts",
           "operationId": "getAlerts",
+          "parameters": [
+            {
+              "in": "query",
+              "name": "severity",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
           "responses": {
             "200": {
               "description": "",
@@ -6110,15 +6228,10 @@
                         "<host-ip2>"
                       ]
                     },
-                    "join_secrets": {
-                      "type": "array",
-                      "description": "List of cluster's join secrets, used to prevent unauthorized hosts from joining the cluster",
-                      "items": {
-                        "type": "string"
-                      },
-                      "example": [
-                        "<some-secret>"
-                      ]
+                    "join_secret": {
+                      "type": "string",
+                      "description": "Cluster join secret, used to prevent unauthorized backend hosts from joining the cluster",
+                      "example": "some-secret"
                     },
                     "admin_password": {
                       "type": "string",
@@ -6824,9 +6937,38 @@
           ],
           "summary": "Get all containers",
           "operationId": "getContainers",
+          "parameters": [
+            {
+              "in": "query",
+              "name": "filter_type",
+              "schema": {
+                "type": "string",
+                "enum": [
+                  "All",
+                  "ByContainer",
+                  "Backends",
+                  "Clients",
+                  "Leadership",
+                  "Leader"
+                ]
+              },
+              "description": "Optional filter parameter based on user needs."
+            },
+            {
+              "in": "query",
+              "name": "container_ids",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                }
+              },
+              "description": "Optional filter parameter based on container IDs. Used if \"ByContainer\" filter is selected."
+            }
+          ],
           "responses": {
             "200": {
-              "description": "",
+              "description": "Success",
               "content": {
                 "application/json": {
                   "schema": {
@@ -7050,6 +7192,16 @@
                         "type": "string",
                         "example": "173.21.11.41"
                       }
+                    },
+                    "join_secret": {
+                      "type": "string",
+                      "description": "Secret used when joining the cluster, or when other backends try to join the cluster.",
+                      "example": "some-secret"
+                    },
+                    "purge_old_secrets": {
+                      "type": "boolean",
+                      "description": "Purge old join secrets so that only the most recently set join-secret may be used.",
+                      "example": false
                     },
                     "apply_container": {
                       "type": "boolean",
@@ -7382,6 +7534,48 @@
           ],
           "summary": "Deactivate containers",
           "operationId": "deactivateContainers",
+          "responses": {
+            "200": {
+              "$ref": "#/components/responses/200"
+            },
+            "401": {
+              "$ref": "#/components/responses/401"
+            },
+            "404": {
+              "$ref": "#/components/responses/404"
+            }
+          },
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "required": [
+                    "container_uids"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "container_uids": {
+                      "type": "array",
+                      "description": "Container uids to deactivate",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/containers/deactivation-check": {
+        "post": {
+          "tags": [
+            "Containers"
+          ],
+          "summary": "Deactivate containers check",
+          "operationId": "deactivateContainers check",
           "responses": {
             "200": {
               "$ref": "#/components/responses/200"
@@ -8012,9 +8206,30 @@
           ],
           "summary": "Get drives list",
           "operationId": "getDrives",
+          "parameters": [
+            {
+              "in": "query",
+              "name": "show_removed",
+              "schema": {
+                "type": "boolean"
+              },
+              "description": "Show drives that were removed from the cluster"
+            },
+            {
+              "in": "query",
+              "name": "container_ids",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                }
+              },
+              "description": "Only return the drives of these container IDs, if not specified, all drives are listed"
+            }
+          ],
           "responses": {
             "200": {
-              "description": "",
+              "description": "Success",
               "content": {
                 "application/json": {
                   "schema": {
@@ -8034,16 +8249,7 @@
             "401": {
               "$ref": "#/components/responses/401"
             }
-          },
-          "parameters": [
-            {
-              "in": "query",
-              "name": "show_removed",
-              "schema": {
-                "type": "boolean"
-              }
-            }
-          ]
+          }
         },
         "post": {
           "tags": [
@@ -16072,6 +16278,16 @@
                       "example": 10,
                       "description": "Maximum size to upload to an object store data blob (format - capacity in decimal or binary units - 11B, 1KB, 1MB, 1GB, 1TB, 1PB, 1EB, 1KiB, 1MiB, 1GiB, 1TiB, 1PiB, 1EiB)"
                     },
+                    "data_storage_class": {
+                      "type": "string",
+                      "description": "The AWS storage class or Azure access tier to use for data blobs",
+                      "example": "INTELLIGENT_TIERING"
+                    },
+                    "metadata_storage_class": {
+                      "type": "string",
+                      "description": "The AWS storage class or Azure access tier to use for metadata blobs",
+                      "example": "INTELLIGENT_TIERING"
+                    },
                     "sts_operation_type": {
                       "type": "string",
                       "description": "AWS STS operation type to use for authentication, optional. Supported - ASSUME_ROLE",
@@ -16332,6 +16548,16 @@
                       "type": "number",
                       "example": 10,
                       "description": "Maximum size to upload to an object store data blob (format - capacity in decimal or binary units - 11B, 1KB, 1MB, 1GB, 1TB, 1PB, 1EB, 1KiB, 1MiB, 1GiB, 1TiB, 1PiB, 1EiB)"
+                    },
+                    "data_storage_class": {
+                      "type": "string",
+                      "description": "The AWS storage class or Azure access tier to use for data blobs",
+                      "example": "INTELLIGENT_TIERING"
+                    },
+                    "metadata_storage_class": {
+                      "type": "string",
+                      "description": "The AWS storage class or Azure access tier to use for metadata blobs",
+                      "example": "INTELLIGENT_TIERING"
                     },
                     "sts_operation_type": {
                       "type": "string",
@@ -17501,11 +17727,6 @@
                       "description": "POSIX GID for anonymous users",
                       "example": 65534
                     },
-                    "etcd_cluster_size": {
-                      "type": "number",
-                      "description": "Size of etcd cluster",
-                      "example": 7
-                    },
                     "domain": {
                       "type": "string",
                       "description": "Virtual host-style comma seperated domains",
@@ -17571,11 +17792,6 @@
                       "type": "number",
                       "description": "POSIX GID for anonymous users",
                       "example": 65534
-                    },
-                    "etcd_cluster_size": {
-                      "type": "number",
-                      "description": "Size of etcd cluster",
-                      "example": 7
                     },
                     "domain": {
                       "type": "string",
@@ -20375,7 +20591,7 @@
           "tags": [
             "Security"
           ],
-          "summary": "Get tokens default expiry time",
+          "summary": "Get tokens default and maximum expiry times",
           "operationId": "getTokensExpiry",
           "responses": {
             "200": {
@@ -20390,11 +20606,23 @@
                         "properties": {
                           "access_token_expiry": {
                             "type": "number",
-                            "example": 100000
+                            "example": 60,
+                            "description": "Default duration of access tokens in seconds"
                           },
                           "refresh_token_expiry": {
                             "type": "number",
-                            "example": 31536000
+                            "example": 86400,
+                            "description": "Default duration of refresh tokens in seconds"
+                          },
+                          "max_access_token_expiry": {
+                            "type": "number",
+                            "example": 3600,
+                            "description": "Maximum duration of access tokens in seconds"
+                          },
+                          "max_refresh_token_expiry": {
+                            "type": "number",
+                            "example": 8640000,
+                            "description": "Maximum duration of refresh tokens in seconds"
                           }
                         }
                       }
@@ -20402,6 +20630,53 @@
                   }
                 }
               }
+            },
+            "401": {
+              "$ref": "#/components/responses/401"
+            }
+          }
+        },
+        "post": {
+          "tags": [
+            "Security"
+          ],
+          "summary": "Set tokens default and maximum expiry times",
+          "operationId": "setTokensExpiry",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "access_token_expiry": {
+                      "type": "number",
+                      "example": 60,
+                      "description": "Default duration of access tokens in seconds"
+                    },
+                    "refresh_token_expiry": {
+                      "type": "number",
+                      "example": 864000,
+                      "description": "Default duration of refresh tokens in seconds"
+                    },
+                    "max_access_token_expiry": {
+                      "type": "number",
+                      "example": 3600,
+                      "description": "Maximum duration of access tokens in seconds"
+                    },
+                    "max_refresh_token_expiry": {
+                      "type": "number",
+                      "example": 8640000,
+                      "description": "Maximum duration of refresh tokens in seconds"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "$ref": "#/components/responses/200"
             },
             "401": {
               "$ref": "#/components/responses/401"
@@ -20743,6 +21018,10 @@
                         "type": "string",
                         "example": "192.168.2.0/21"
                       }
+                    },
+                    "read_only": {
+                      "type": "boolean",
+                      "example": false
                     }
                   }
                 }
@@ -20972,6 +21251,10 @@
                         "type": "string",
                         "example": "10.1.4.0/24"
                       }
+                    },
+                    "read_only": {
+                      "type": "boolean",
+                      "example": false
                     }
                   }
                 }
@@ -21069,6 +21352,11 @@
                               "Allow",
                               "Deny"
                             ]
+                          },
+                          "read_only": {
+                            "description": "true if the policy is read-only",
+                            "type": "boolean",
+                            "example": false
                           },
                           "explicit": {
                             "description": "whether result was explicitly matched or not",
@@ -21975,6 +22263,151 @@
           }
         }
       },
+      "/snapshotPolicy/{uid}/duplicate": {
+        "post": {
+          "tags": [
+            "Snapshot Policy"
+          ],
+          "summary": "Duplicate a snapshot policy",
+          "operationId": "duplicateSnapshotPolicy",
+          "parameters": [
+            {
+              "in": "path",
+              "name": "uid",
+              "required": true,
+              "schema": {
+                "type": "string"
+              },
+              "description": "Snapshot policy uid"
+            },
+            {
+              "in": "query",
+              "name": "include_attached_filesystems",
+              "description": "Define whether or not to include the attached filesystems",
+              "schema": {
+                "type": "boolean"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "$ref": "#/components/schemas/snapshotPolicyInfo"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "$ref": "#/components/responses/400"
+            },
+            "401": {
+              "$ref": "#/components/responses/401"
+            },
+            "404": {
+              "$ref": "#/components/responses/404"
+            }
+          },
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "description": "name of the new snapshot policy",
+                      "type": "string",
+                      "example": "policy_dup"
+                    },
+                    "description": {
+                      "description": "description of the new snapshot policy",
+                      "type": "string",
+                      "example": "duplicate policy"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/snapshotPolicy/{uid}/runOnce": {
+        "post": {
+          "tags": [
+            "Snapshot Policy"
+          ],
+          "summary": "Run the snapshot policy schedule once",
+          "operationId": "runSnapshotPolicyScheduleOnce",
+          "parameters": [
+            {
+              "in": "path",
+              "name": "uid",
+              "required": true,
+              "schema": {
+                "type": "string"
+              },
+              "description": "Snapshot policy uid"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "properties": {
+                      "data": {
+                        "type": "string",
+                        "example": "Background jobs are initiated to generate snapshots for all attached filesystems."
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "$ref": "#/components/responses/400"
+            },
+            "401": {
+              "$ref": "#/components/responses/401"
+            },
+            "404": {
+              "$ref": "#/components/responses/404"
+            }
+          },
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "schedule_type": {
+                      "description": "schedule type to be run once, One of - periodic, hourly, daily, weekly, monthly",
+                      "type": "string",
+                      "enum": [
+                        "PERIODIC",
+                        "HOURLY",
+                        "DAILY",
+                        "WEEKLY",
+                        "MONTHLY"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
       "/snapshots": {
         "get": {
           "tags": [
@@ -22542,6 +22975,163 @@
             },
             "401": {
               "$ref": "#/components/responses/401"
+            }
+          }
+        }
+      },
+      "/snapshots/diff/prepare": {
+        "post": {
+          "summary": "prepare for snapshot diff",
+          "operationId": "diffPrepare",
+          "tags": [
+            "Snapshots"
+          ],
+          "description": "",
+          "responses": {
+            "200": {
+              "description": "",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "$ref": "#/components/schemas/cookielist"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              "$ref": "#/components/responses/401"
+            }
+          },
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "fs_name",
+                    "recent_snap",
+                    "parallelism"
+                  ],
+                  "properties": {
+                    "fs_name": {
+                      "type": "string",
+                      "description": "name of the filesystem for diff name",
+                      "example": "fs1"
+                    },
+                    "recent_snap": {
+                      "type": "string",
+                      "description": "name of the snapshot to diff",
+                      "example": "snap2"
+                    },
+                    "older_snap": {
+                      "type": "string",
+                      "description": "name of the base snapshot",
+                      "example": "snap1"
+                    },
+                    "parallelism": {
+                      "type": "number",
+                      "description": "number of cookies requested",
+                      "example": 16
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/snapshots/diff/getResults": {
+        "post": {
+          "summary": "get for snapshot diff",
+          "operationId": "diffList",
+          "tags": [
+            "Snapshots"
+          ],
+          "description": "",
+          "responses": {
+            "200": {
+              "description": "",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "$ref": "#/components/schemas/diff_list"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              "$ref": "#/components/responses/401"
+            }
+          },
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "fs_name",
+                    "recent_snap",
+                    "max_results"
+                  ],
+                  "properties": {
+                    "fs_name": {
+                      "type": "string",
+                      "description": "name of the filesystem for diff name",
+                      "example": "fs1"
+                    },
+                    "recent_snap": {
+                      "type": "string",
+                      "description": "name of the snapshot to diff",
+                      "example": "snap2"
+                    },
+                    "older_snap": {
+                      "type": "string",
+                      "description": "name of the base snapshot",
+                      "example": "snap1"
+                    },
+                    "max_results": {
+                      "type": "number",
+                      "description": "number of changed inodes requested",
+                      "example": 100
+                    },
+                    "resume_token": {
+                      "type": "string",
+                      "description": "starting token for doing diff",
+                      "example": "0-0-0-3-2-0-0"
+                    },
+                    "stop_token": {
+                      "type": "string",
+                      "description": "ending token for doing diff",
+                      "example": "FFFF-FFFF-FFFFFFFF-FFFFFFFF-FFFFFFFF-FFFFFFFF-0"
+                    },
+                    "output_type": {
+                      "type": "string",
+                      "enum": [
+                        "DEFAULT",
+                        "PARTIAL_STAT",
+                        "FULL_STAT"
+                      ],
+                      "description": "output stat type"
+                    },
+                    "resolve_path": {
+                      "type": "boolean",
+                      "description": "specify whether to resolve path of a diff entry or not"
+                    }
+                  }
+                }
+              }
             }
           }
         }
@@ -23396,10 +23986,26 @@
                       "description": "Telemetry gateway status",
                       "example": true
                     },
-                    "auditTracesEnabled": {
+                    "audit_traces_enabled": {
                       "type": "boolean",
                       "description": "Telemetry audit traces status",
                       "example": true
+                    },
+                    "resolve_full_file_paths": {
+                      "type": "boolean",
+                      "description": "Resolve full file paths in telemetry",
+                      "example": true
+                    },
+                    "operations": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Array of operations to enable. Use 'All' or any subset from ['Open','Create','Delete',...].",
+                      "example": [
+                        "Create",
+                        "Delete"
+                      ]
                     }
                   }
                 }
