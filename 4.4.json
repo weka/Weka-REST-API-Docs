@@ -4531,6 +4531,39 @@
             }
           }
         },
+        "filesystemInodeGetPath": {
+          "type": "object",
+          "properties": {
+            "access_point": {
+              "type": "string",
+              "example": "string"
+            },
+            "fs_id": {
+              "type": "string",
+              "example": "FSId<1>"
+            },
+            "fs_name": {
+              "type": "string",
+              "example": "default"
+            },
+            "inode_id": {
+              "type": "string",
+              "example": "10092623495168"
+            },
+            "path": {
+              "type": "string",
+              "example": "/"
+            },
+            "snap_name": {
+              "type": "string",
+              "example": "string"
+            },
+            "snap_view_id": {
+              "type": "string",
+              "example": "SnapViewId<1>"
+            }
+          }
+        },
         "filesystemResolve": {
           "type": "object",
           "properties": {
@@ -6916,6 +6949,44 @@
                                 "example": 3600
                               }
                             }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              "$ref": "#/components/responses/401"
+            }
+          }
+        }
+      },
+      "/cluster/capacity_reduction": {
+        "get": {
+          "tags": [
+            "Cluster"
+          ],
+          "summary": "Get cluster capacity reduction info",
+          "operationId": "getCapacityReduction",
+          "responses": {
+            "200": {
+              "description": "",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "properties": {
+                      "data": {
+                        "type": "object",
+                        "properties": {
+                          "data_reduction_saved_bytes": {
+                            "type": "number",
+                            "example": 1829454741504
+                          },
+                          "data_reduction_ratio": {
+                            "type": "number",
+                            "example": 2.53
                           }
                         }
                       }
@@ -10187,16 +10258,60 @@
           ]
         }
       },
-      "/fileSystems/{inode_context}/resolve": {
+      "/fileSystems/{inode_id}/getPath": {
         "get": {
           "tags": [
             "Filesystem"
           ],
-          "summary": "Get the parameters of a specific filesystem by inodeContext",
+          "summary": "Get the parameters of a specific filesystem by inode_id",
           "parameters": [
             {
               "in": "path",
-              "name": "inode_context",
+              "name": "inode_id",
+              "required": true,
+              "schema": {
+                "type": "string"
+              },
+              "description": "filesystem inode"
+            }
+          ],
+          "operationId": "filesystemResolveInode",
+          "responses": {
+            "200": {
+              "description": "",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "$ref": "#/components/schemas/filesystemInodeGetPath"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              "$ref": "#/components/responses/401"
+            },
+            "404": {
+              "$ref": "#/components/responses/404"
+            }
+          }
+        }
+      },
+      "/fileSystems/{inode_id}/resolve": {
+        "get": {
+          "deprecated": true,
+          "tags": [
+            "Filesystem"
+          ],
+          "summary": "Get the parameters of a specific filesystem by inode_id, deprecated use GET /fileSystems/{inode_id}/getPath",
+          "parameters": [
+            {
+              "in": "path",
+              "name": "inode_id",
               "required": true,
               "schema": {
                 "type": "string"
@@ -10230,7 +10345,7 @@
           }
         }
       },
-      "/fileSystems/quota/{inode_context}": {
+      "/fileSystems/quota/{inode_id}": {
         "put": {
           "tags": [
             "Quota"
@@ -10302,7 +10417,7 @@
           "parameters": [
             {
               "in": "path",
-              "name": "inode_context",
+              "name": "inode_id",
               "required": true,
               "schema": {
                 "type": "string"
