@@ -3,7 +3,7 @@
     "info": {
       "title": "@weka-api",
       "version": "5.0",
-      "description": "<div>The WEKA system provides a RESTful API, enabling efficient automation and integration into existing workflows or monitoring systems. To access the REST API documentation within the cluster, navigate to <code>/api/v2/docs</code> on port 14000 (e.g., <code>https://weka01:14000/api/v2/docs</code>).<br><br>For detailed guidance on using the REST API, including CLI command equivalents and related concepts, refer to the official documentation: <a href=\"https://docs.weka.io/getting-started-with-weka/getting-started-with-weka-rest-api\">Getting Started with the WEKA REST API</a>.<br><br><div style=\"margin-top: 15px;\"><b>Important Note:</b> WEKA uses 64-bit numbers. Ensure proper handling of these numbers in your programming language of choice. For JavaScript, it is recommended to use the <code>json-bigint</code> library to manage large numbers accurately.</div></div>"
+      "description": "\n<div>\n  The WEKA system provides a RESTful API, enabling efficient\n  automation and integration into existing workflows or monitoring systems. To access\n  the REST API documentation within the cluster, navigate to <code>/api/v2/docs</code>\n  on port 14000 (e.g.,\n  <code>https://weka01:14000/api/v2/docs</code>).\n  <br>\n  <br>\n  For detailed guidance on using the REST API, including CLI command equivalents and related concepts, refer to the official\n  documentation:\n  <a href=\"https://docs.weka.io/getting-started-with-weka/getting-started-with-weka-rest-api\">Getting Started with the WEKA REST API</a>.\n  <br>\n  <br>\n  <div style=\"margin-top: 15px;\">\n    <b>Important Note:</b>\n    WEKA uses 64-bit numbers. Ensure proper handling of these numbers in your programming language of\n    choice. For JavaScript, it is recommended to use the\n    <code>json-bigint</code>\n    library to manage large numbers accurately.\n  </div>\n  <div style=\"margin-top: 15px;\">\n    <b>Important:</b>\n    WEKA uses 64-bit numbers, which requires careful handling when interacting with the API across different programming languages.\n    In JavaScript, for instance, the\n    <code>\"json-bigint\"</code>\n    library is recommended.\n  </div>\n</div>"
     },
     "servers": [
       {
@@ -4417,7 +4417,14 @@
             },
             "type": {
               "type": "string",
-              "example": "File"
+              "example": "File",
+              "enum": [
+                "File",
+                "Splunk",
+                "S3",
+                "Vector",
+                "Kafka"
+              ]
             },
             "sources": {
               "type": "array",
@@ -4528,6 +4535,39 @@
             "certificate": {
               "type": "string",
               "example": "-----BEGIN CERTIFICATE-----\\n<all_the_content_of_cert.pem_with_\\n>\\n-----END CERTIFICATE-----\""
+            }
+          }
+        },
+        "filesystemInodeGetPath": {
+          "type": "object",
+          "properties": {
+            "access_point": {
+              "type": "string",
+              "example": "string"
+            },
+            "fs_id": {
+              "type": "string",
+              "example": "FSId<1>"
+            },
+            "fs_name": {
+              "type": "string",
+              "example": "default"
+            },
+            "inode_id": {
+              "type": "string",
+              "example": "10092623495168"
+            },
+            "path": {
+              "type": "string",
+              "example": "/"
+            },
+            "snap_name": {
+              "type": "string",
+              "example": "string"
+            },
+            "snap_view_id": {
+              "type": "string",
+              "example": "SnapViewId<1>"
             }
           }
         },
@@ -5461,74 +5501,6 @@
       }
     ],
     "paths": {
-      "/accessGroups": {
-        "get": {
-          "tags": [
-            "Access Groups"
-          ],
-          "summary": "Get access groups status",
-          "operationId": "getAccessGroupStatus",
-          "responses": {
-            "200": {
-              "description": "",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "properties": {
-                      "data": {
-                        "type": "object",
-                        "properties": {
-                          "access_groups_enabled": {
-                            "type": "boolean",
-                            "example": false
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            },
-            "401": {
-              "$ref": "#/components/responses/401"
-            }
-          }
-        }
-      },
-      "/accessGroups/enable": {
-        "post": {
-          "tags": [
-            "Access Groups"
-          ],
-          "summary": "Enable access groups",
-          "operationId": "enableAccessGroups",
-          "responses": {
-            "200": {
-              "$ref": "#/components/responses/200"
-            },
-            "401": {
-              "$ref": "#/components/responses/401"
-            }
-          }
-        }
-      },
-      "/accessGroups/disable": {
-        "post": {
-          "tags": [
-            "Access Groups"
-          ],
-          "summary": "Disable access groups",
-          "operationId": "disableAccessGroups",
-          "responses": {
-            "200": {
-              "$ref": "#/components/responses/200"
-            },
-            "401": {
-              "$ref": "#/components/responses/401"
-            }
-          }
-        }
-      },
       "/activeDirectory": {
         "put": {
           "tags": [
@@ -6926,6 +6898,130 @@
             },
             "401": {
               "$ref": "#/components/responses/401"
+            }
+          }
+        }
+      },
+      "/cluster/capacity_reduction": {
+        "get": {
+          "tags": [
+            "Cluster"
+          ],
+          "summary": "Get cluster capacity reduction info",
+          "operationId": "getCapacityReduction",
+          "responses": {
+            "200": {
+              "description": "",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "properties": {
+                      "data": {
+                        "type": "object",
+                        "properties": {
+                          "data_reduction_saved_bytes": {
+                            "type": "number",
+                            "example": 1829454741504
+                          },
+                          "data_reduction_ratio": {
+                            "type": "number",
+                            "example": 2.53
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              "$ref": "#/components/responses/401"
+            }
+          }
+        }
+      },
+      "/cluster/requestedAction": {
+        "post": {
+          "tags": [
+            "Cluster"
+          ],
+          "summary": "Set container requested action",
+          "operationId": "setClusterRequestedAction",
+          "responses": {
+            "200": {
+              "$ref": "#/components/responses/200"
+            },
+            "400": {
+              "$ref": "#/components/responses/400"
+            },
+            "401": {
+              "$ref": "#/components/responses/401"
+            }
+          },
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "host_ids",
+                    "requested_action"
+                  ],
+                  "properties": {
+                    "host_ids": {
+                      "type": "array",
+                      "description": "A list of container ids for which to set flow",
+                      "items": {
+                        "type": "number"
+                      }
+                    },
+                    "requested_action": {
+                      "type": "string",
+                      "description": "The requested action to set the containers to (NONE, STOP, RESTART, APPLY_RESOURCES, UPGRADE)"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/cluster/requestedAction/electiveProtection": {
+        "post": {
+          "tags": [
+            "Cluster"
+          ],
+          "summary": "Set cluster requested action elective protection level",
+          "operationId": "setClusterRequestedActionElectiveProtection",
+          "responses": {
+            "200": {
+              "$ref": "#/components/responses/200"
+            },
+            "400": {
+              "$ref": "#/components/responses/400"
+            },
+            "401": {
+              "$ref": "#/components/responses/401"
+            }
+          },
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "value"
+                  ],
+                  "properties": {
+                    "value": {
+                      "type": "number",
+                      "description": "The elective protection level to set (must be positive)"
+                    }
+                  }
+                }
+              }
             }
           }
         }
@@ -8685,6 +8781,7 @@
             {
               "in": "query",
               "name": "start_time",
+              "required": true,
               "schema": {
                 "type": "string"
               }
@@ -10187,16 +10284,60 @@
           ]
         }
       },
-      "/fileSystems/{inode_context}/resolve": {
+      "/fileSystems/{inode_id}/getPath": {
         "get": {
           "tags": [
             "Filesystem"
           ],
-          "summary": "Get the parameters of a specific filesystem by inodeContext",
+          "summary": "Get the parameters of a specific filesystem by inode_id",
           "parameters": [
             {
               "in": "path",
-              "name": "inode_context",
+              "name": "inode_id",
+              "required": true,
+              "schema": {
+                "type": "string"
+              },
+              "description": "filesystem inode"
+            }
+          ],
+          "operationId": "filesystemResolveInode",
+          "responses": {
+            "200": {
+              "description": "",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "$ref": "#/components/schemas/filesystemInodeGetPath"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              "$ref": "#/components/responses/401"
+            },
+            "404": {
+              "$ref": "#/components/responses/404"
+            }
+          }
+        }
+      },
+      "/fileSystems/{inode_id}/resolve": {
+        "get": {
+          "deprecated": true,
+          "tags": [
+            "Filesystem"
+          ],
+          "summary": "Get the parameters of a specific filesystem by inode_id, deprecated use GET /fileSystems/{inode_id}/getPath",
+          "parameters": [
+            {
+              "in": "path",
+              "name": "inode_id",
               "required": true,
               "schema": {
                 "type": "string"
@@ -10230,7 +10371,7 @@
           }
         }
       },
-      "/fileSystems/quota/{inode_context}": {
+      "/fileSystems/quota/{inode_id}": {
         "put": {
           "tags": [
             "Quota"
@@ -10302,7 +10443,7 @@
           "parameters": [
             {
               "in": "path",
-              "name": "inode_context",
+              "name": "inode_id",
               "required": true,
               "schema": {
                 "type": "string"
