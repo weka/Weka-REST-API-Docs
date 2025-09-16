@@ -1,0 +1,22 @@
+body {
+  margin: 0 !important;
+}
+
+/* Hide authorization elements in SwaggerUI */
+.auth-wrapper,
+.authorize,
+.btn.authorize,
+.auth-btn-wrapper,
+.authorization__btn,
+.scheme-container,
+.auth-container {
+  display: none !important;
+}
+
+/* Hide try it out elements */
+.try-out,
+.try-out__btn,
+.execute-wrapper,
+.btn.execute {
+  display: none !important;
+}
