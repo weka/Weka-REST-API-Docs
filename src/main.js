@@ -13,10 +13,7 @@ SwaggerUI({
     { url: "/docs/4.2.json", name: "4.2" },
     { url: "/docs/4.1.json", name: "4.1" },
     { url: "/docs/4.0.json", name: "4.0" },
-    { url: "/docs/3.14.json", name: "3.14" },
-    { url: "/docs/3.13.json", name: "3.13" },
-    { url: "/docs/3.12.json", name: "3.12" },
-    { url: "/docs/3.11.json", name: "3.11" },
+    { url: "/docs/3.14.json", name: "3.14" }
   ],
   "urls.primaryName": "5.0",
   deepLinking: true,
