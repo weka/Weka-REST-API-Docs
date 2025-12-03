@@ -3,7 +3,7 @@
     "info": {
       "title": "@weka-api",
       "version": "5.0",
-      "description": "\n<div>\n  The WEKA system provides a RESTful API, enabling efficient\n  automation and integration into existing workflows or monitoring systems. To access\n  the REST API documentation within the cluster, navigate to <code>/api/v2/docs</code>\n  on port 14000 (e.g.,\n  <code>https://weka01:14000/api/v2/docs</code>).\n  <br>\n  <br>\n  For detailed guidance on using the REST API, including CLI command equivalents and related concepts, refer to the official\n  documentation:\n  <a href=\"https://docs.weka.io/getting-started-with-weka/getting-started-with-weka-rest-api\">Getting Started with the WEKA REST API</a>.\n  <br>\n  <br>\n  <div style=\"margin-top: 15px;\">\n    <b>Important Note:</b>\n    WEKA uses 64-bit numbers. Ensure proper handling of these numbers in your preferred programming language.\n  For JavaScript, it is recommended to use the\n    <code>json-bigint</code>\n    library to manage large numbers accurately.\n  </div>\n  <div style=\"margin-top: 15px;\">"
+      "description": "\n<div>\n  The WEKA system provides a RESTful API, enabling efficient\n  automation and integration into existing workflows or monitoring systems. To access\n  the REST API documentation within the cluster, navigate to <code>/api/v2/docs</code>\n  on port 14000 (e.g.,\n  <code>https://weka01:14000/api/v2/docs</code>).\n  <br>\n  <br>\n  For detailed guidance on using the REST API, including CLI command equivalents and related concepts, refer to the official\n  documentation:\n  <a href=\"https://docs.weka.io/getting-started-with-weka/getting-started-with-weka-rest-api\">Getting Started with the WEKA REST API</a>.\n  <br>\n  <br>\n  <div style=\"margin-top: 15px;\">\n    <b>Important:</b>\n    WEKA uses 64-bit numbers, which requires careful handling when interacting with the API across different programming languages.\n    In JavaScript, for instance, the\n    <code>\"json-bigint\"</code>\n    library is recommended.\n  </div>\n</div>"
     },
     "servers": [
       {
@@ -6940,92 +6940,6 @@
           }
         }
       },
-      "/cluster/requestedAction": {
-        "post": {
-          "tags": [
-            "Cluster"
-          ],
-          "summary": "Set container requested action",
-          "operationId": "setClusterRequestedAction",
-          "responses": {
-            "200": {
-              "$ref": "#/components/responses/200"
-            },
-            "400": {
-              "$ref": "#/components/responses/400"
-            },
-            "401": {
-              "$ref": "#/components/responses/401"
-            }
-          },
-          "requestBody": {
-            "required": true,
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": [
-                    "host_ids",
-                    "requested_action"
-                  ],
-                  "properties": {
-                    "host_ids": {
-                      "type": "array",
-                      "description": "A list of container ids for which to set flow",
-                      "items": {
-                        "type": "number"
-                      }
-                    },
-                    "requested_action": {
-                      "type": "string",
-                      "description": "The requested action to set the containers to (NONE, STOP, RESTART, APPLY_RESOURCES, UPGRADE)"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "/cluster/requestedAction/electiveProtection": {
-        "post": {
-          "tags": [
-            "Cluster"
-          ],
-          "summary": "Set cluster requested action elective protection level",
-          "operationId": "setClusterRequestedActionElectiveProtection",
-          "responses": {
-            "200": {
-              "$ref": "#/components/responses/200"
-            },
-            "400": {
-              "$ref": "#/components/responses/400"
-            },
-            "401": {
-              "$ref": "#/components/responses/401"
-            }
-          },
-          "requestBody": {
-            "required": true,
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": [
-                    "value"
-                  ],
-                  "properties": {
-                    "value": {
-                      "type": "number",
-                      "description": "The elective protection level to set (must be positive)"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
       "/containers": {
         "get": {
           "tags": [
@@ -8138,6 +8052,64 @@
                           "OFED"
                         ]
                       }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/containers/requestedAction": {
+        "put": {
+          "tags": [
+            "Containers"
+          ],
+          "summary": "Set requested action on containers",
+          "operationId": "setContainerRequestedAction",
+          "responses": {
+            "200": {
+              "$ref": "#/components/responses/200"
+            },
+            "400": {
+              "$ref": "#/components/responses/400"
+            },
+            "401": {
+              "$ref": "#/components/responses/401"
+            }
+          },
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "container_ids",
+                    "requested_action"
+                  ],
+                  "properties": {
+                    "container_ids": {
+                      "type": "array",
+                      "description": "A list of container IDs for which to set the requested action",
+                      "items": {
+                        "type": "integer"
+                      },
+                      "example": [
+                        0,
+                        1,
+                        2
+                      ]
+                    },
+                    "requested_action": {
+                      "type": "string",
+                      "description": "The requested action to set for the containers",
+                      "enum": [
+                        "STOP",
+                        "RESTART",
+                        "APPLY_RESOURCES"
+                      ],
+                      "example": "RESTART"
                     }
                   }
                 }
@@ -11224,6 +11196,47 @@
               "example": "00000000-0000-0000-0000-000000000000"
             }
           ]
+        }
+      },
+      "/fileSystems/freeSpaceInOrg": {
+        "get": {
+          "tags": [
+            "Filesystem"
+          ],
+          "summary": "Get free space for a new filesystem in organization",
+          "operationId": "getFreeSpaceInOrg",
+          "responses": {
+            "200": {
+              "description": "",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "unprovisionedSpace": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "Unprovisioned space in bytes",
+                        "example": 1073741824
+                      },
+                      "reclaimableSpace": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "Reclaimable space in bytes. 0 is if thin provisioning disabled",
+                        "example": 536870912
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              "$ref": "#/components/responses/401"
+            },
+            "404": {
+              "$ref": "#/components/responses/404"
+            }
+          }
         }
       },
       "/fileSystemGroups": {
@@ -21966,6 +21979,69 @@
             },
             "401": {
               "$ref": "#/components/responses/401"
+            }
+          }
+        }
+      },
+      "/servers/requestedAction": {
+        "put": {
+          "tags": [
+            "Servers"
+          ],
+          "summary": "Set requested action on servers",
+          "operationId": "setServersRequestedAction",
+          "responses": {
+            "200": {
+              "$ref": "#/components/responses/200"
+            },
+            "400": {
+              "$ref": "#/components/responses/400"
+            },
+            "401": {
+              "$ref": "#/components/responses/401"
+            }
+          },
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "server_identifiers",
+                    "requested_action"
+                  ],
+                  "properties": {
+                    "server_identifiers": {
+                      "type": "array",
+                      "description": "A list of server identifiers (hostnames or IPs) for which to set the requested action",
+                      "items": {
+                        "type": "string"
+                      },
+                      "example": [
+                        "server1",
+                        "192.168.1.100",
+                        "server2"
+                      ]
+                    },
+                    "requested_action": {
+                      "type": "string",
+                      "description": "The requested action to set for all containers on the servers",
+                      "enum": [
+                        "STOP",
+                        "RESTART",
+                        "APPLY_RESOURCES"
+                      ],
+                      "example": "RESTART"
+                    },
+                    "timeout": {
+                      "type": "number",
+                      "description": "Timeout for the requested action in seconds (optional)",
+                      "example": 300
+                    }
+                  }
+                }
+              }
             }
           }
         }
