@@ -7,6 +7,7 @@ import "./main.css";
 SwaggerUI({
   dom_id: "#app",
   urls: [
+    { url: "/docs/5.1.json", name: "5.1" },
     { url: "/docs/5.0.json", name: "5.0" },
     { url: "/docs/4.4.json", name: "4.4" },
     { url: "/docs/4.3.json", name: "4.3" },
@@ -15,7 +16,7 @@ SwaggerUI({
     { url: "/docs/4.0.json", name: "4.0" },
     { url: "/docs/3.14.json", name: "3.14" }
   ],
-  "urls.primaryName": "5.0",
+  "urls.primaryName": "5.1",
   deepLinking: true,
   presets: [SwaggerUI.presets.apis, SwaggerUIStandalonePreset],
   plugins: [SwaggerUI.plugins.DownloadUrl].filter(
