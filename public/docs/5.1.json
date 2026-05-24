@@ -20978,6 +20978,94 @@
           ]
         }
       },
+      "/s3/tenantSetup": {
+        "get": {
+          "tags": [
+            "S3"
+          ],
+          "summary": "Get S3 settings for the calling tenant",
+          "description": "Returns the calling tenant's effective S3 default filesystem and anonymous POSIX UID/GID.\nDefault filesystem falls back to the cluster-wide default when no tenant override is set.\n",
+          "operationId": "getS3TenantSetup",
+          "responses": {
+            "200": {
+              "description": "",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "filesystem_name": {
+                        "type": "string"
+                      },
+                      "active": {
+                        "type": "boolean"
+                      },
+                      "anonymous_posix_uid": {
+                        "type": "number"
+                      },
+                      "anonymous_posix_gid": {
+                        "type": "number"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "$ref": "#/components/responses/400"
+            },
+            "401": {
+              "$ref": "#/components/responses/401"
+            }
+          }
+        },
+        "put": {
+          "tags": [
+            "S3"
+          ],
+          "summary": "Update S3 settings for the calling tenant",
+          "description": "Sets the calling tenant's S3 default filesystem and/or anonymous POSIX UID/GID.\nUID and GID must be set together. At least one parameter must be provided.\n",
+          "operationId": "setS3TenantSetup",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "default_fs_name": {
+                      "type": "string",
+                      "description": "Default filesystem name for new buckets created via the S3 API.",
+                      "example": "default"
+                    },
+                    "anonymous_posix_uid": {
+                      "type": "number",
+                      "description": "POSIX UID for anonymous users.",
+                      "example": 65534
+                    },
+                    "anonymous_posix_gid": {
+                      "type": "number",
+                      "description": "POSIX GID for anonymous users.",
+                      "example": 65534
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": ""
+            },
+            "400": {
+              "$ref": "#/components/responses/400"
+            },
+            "401": {
+              "$ref": "#/components/responses/401"
+            }
+          }
+        }
+      },
       "/s3/buckets": {
         "get": {
           "tags": [
@@ -30593,7 +30681,82 @@
             }
           }
         }
+      },
+      "/users/{uid}/s3/resetCredentials": {
+        "post": {
+          "summary": "Reset S3 API credentials",
+          "description": "Generates a new S3 access key and secret key for the specified S3 user, invalidating any existing credentials. The new credentials are returned in the response and cannot be retrieved again.",
+          "operationId": "resetUserS3Credentials",
+          "tags": [
+            "User"
+          ],
+          "parameters": [
+            {
+              "in": "path",
+              "name": "uid",
+              "description": "Unique user identifier (UUID format).",
+              "schema": {
+                "type": "string"
+              },
+              "required": true
+            }
+          ],
+          "requestBody": {
+            "required": false,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "org": {
+                      "type": "string",
+                      "description": "Tenant name or ID (cluster admin only). Defaults to the caller's tenant.",
+                      "example": "tenant1"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "S3 credentials reset successfully.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "type": "object",
+                        "properties": {
+                          "accessKey": {
+                            "type": "string",
+                            "description": "The new S3 access key."
+                          },
+                          "secretKey": {
+                            "type": "string",
+                            "description": "The new S3 secret key."
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "$ref": "#/components/responses/400"
+            },
+            "401": {
+              "$ref": "#/components/responses/401"
+            },
+            "404": {
+              "$ref": "#/components/responses/404"
+            }
+          }
+        }
       }
     },
-    "tags": []
-  }
+
+  }    "tags": []
+}
