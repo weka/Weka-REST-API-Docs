@@ -1,5 +1,4 @@
-[
-  {
+{
     "openapi": "3.0.3",
     "info": {
       "title": "@weka-api",
@@ -259,7 +258,7 @@
             },
             "action": {
               "type": "string",
-              "example": "Change the admin user password to using weka user passwd to ensure only authorized users can access the cluster"
+              "example": "Change the admin user password to using 'weka user passwd' to ensure only authorized users can access the cluster"
             },
             "title": {
               "type": "string",
@@ -5827,7 +5826,7 @@
             "Alerts"
           ],
           "summary": "Get all cluster alerts",
-          "description": "Returns a list of active cluster alerts to monitor the systems health. The list includes silenced alerts and can be filtered by severity level.",
+          "description": "Returns a list of active cluster alerts to monitor the system's health. The list includes silenced alerts and can be filtered by severity level.",
           "operationId": "getAlerts",
           "parameters": [
             {
@@ -7275,7 +7274,7 @@
               "schema": {
                 "type": "string"
               },
-              "description": "Comma-separated top N values for each relative level (e.g., \"10,5,3\"). Each value 1-10. Aggregates rest as OTHERS (optional)",
+              "description": "Comma-separated top N values for each relative level (e.g., \"10,5,3\"). Each value 1-10. Aggregates rest as 'OTHERS' (optional)",
               "example": "10,5,3"
             }
           ],
@@ -7936,7 +7935,7 @@
                     },
                     "hosts_ips": {
                       "type": "array",
-                      "description": "Management IP addresses. If empty, the hostnames are resolved. For HA or mixed-networking, use the format ip+ip+...+ip.",
+                      "description": "Management IP addresses. If empty, the hostnames are resolved. For HA or mixed-networking, use the format 'ip+ip+...+ip'.",
                       "items": {
                         "type": "string"
                       },
@@ -8722,7 +8721,7 @@
                   "Leader"
                 ]
               },
-              "description": "Filters the list of containers. Use ByContainer to specify a list of container IDs."
+              "description": "Filters the list of containers. Use 'ByContainer' to specify a list of container IDs."
             },
             {
               "in": "query",
@@ -8733,7 +8732,7 @@
                   "type": "number"
                 }
               },
-              "description": "A list of container IDs to retrieve. Required when filter_type is ByContainer."
+              "description": "A list of container IDs to retrieve. Required when 'filter_type' is 'ByContainer'."
             },
             {
               "in": "query",
@@ -8816,7 +8815,7 @@
                     "ip": {
                       "type": "string",
                       "example": "173.21.11.41",
-                      "description": "The management IP address. If empty, the hostname is resolved. For high-availability configurations, use a + separated list of IPs."
+                      "description": "The management IP address. If empty, the hostname is resolved. For high-availability configurations, use a '+' separated list of IPs."
                     },
                     "no_wait": {
                       "type": "boolean",
@@ -9234,7 +9233,7 @@
               "schema": {
                 "type": "string"
               },
-              "description": "The resource type to retrieve, either Staging or Stable. Defaults to Staging."
+              "description": "The resource type to retrieve, either 'Staging' or 'Stable'. Defaults to 'Staging'."
             }
           ]
         }
@@ -9557,7 +9556,7 @@
                     },
                     "ips_type": {
                       "type": "string",
-                      "description": "Specifies the IP address source: POOL for automatic allocation from the default data network, or USER for manual assignment.",
+                      "description": "Specifies the IP address source: 'POOL' for automatic allocation from the default data network, or 'USER' for manual assignment.",
                       "enum": [
                         "POOL",
                         "USER"
@@ -11073,7 +11072,7 @@
                     "org": {
                       "type": "string",
                       "example": "org1",
-                      "description": "Tenant name or ID. Defaults to the current users tenant."
+                      "description": "Tenant name or ID. Defaults to the current user's tenant."
                     }
                   }
                 }
@@ -11305,7 +11304,7 @@
               "schema": {
                 "type": "boolean"
               },
-              "description": "Delete the filesystems objects from Object Storage, making all uploaded snapshots unusable."
+              "description": "Delete the filesystem's objects from Object Storage, making all uploaded snapshots unusable."
             }
           ]
         }
@@ -11824,7 +11823,7 @@
               "schema": {
                 "type": "string"
               },
-              "description": "The unique identifier of the directorys inode."
+              "description": "The unique identifier of the directory's inode."
             }
           ]
         },
@@ -11922,7 +11921,7 @@
               "schema": {
                 "type": "string"
               },
-              "description": "Directorys inode ID."
+              "description": "Directory's inode ID."
             },
             {
               "in": "query",
@@ -12054,7 +12053,7 @@
               "schema": {
                 "type": "string"
               },
-              "description": "Directorys inode ID."
+              "description": "Directory's inode ID."
             },
             {
               "in": "query",
@@ -12187,7 +12186,7 @@
               "schema": {
                 "type": "string"
               },
-              "description": "Directory inode ID."
+              "description": "Directory's inode ID."
             },
             {
               "in": "query",
@@ -12366,7 +12365,7 @@
               "schema": {
                 "type": "string"
               },
-              "description": "Directory inode ID."
+              "description": "Directory's inode ID."
             },
             {
               "in": "query",
@@ -12475,7 +12474,7 @@
               "schema": {
                 "type": "string"
               },
-              "description": "Directory inode ID."
+              "description": "Directory's inode ID."
             },
             {
               "in": "query",
@@ -12717,7 +12716,7 @@
             "Filesystem"
           ],
           "summary": "Set thin-provisioning reserve",
-          "description": "Sets the thin-provisioning space for your organization filesystems.",
+          "description": "Sets the thin-provisioning space for your organization's filesystems.",
           "operationId": "setFileSystemsThinProvisionReserve",
           "parameters": [
             {
@@ -12777,7 +12776,7 @@
             "Filesystem"
           ],
           "summary": "Remove thin-provisioning reserve",
-          "description": "Removes the existing reserved thin-provisioning space allocated for your organization filesystems.",
+          "description": "Removes the existing reserved thin-provisioning space allocated for your organization's filesystems.",
           "operationId": "deleteFileSystemsThinProvisionReserve",
           "parameters": [
             {
@@ -13034,7 +13033,7 @@
             "Filesystem"
           ],
           "summary": "Attach security policies to a filesystem",
-          "description": "Adds one or more security policies to a filesystem\"s existing policy list.",
+          "description": "Adds one or more security policies to a filesystem's existing policy list.",
           "operationId": "attachFsSecurityPolicies",
           "responses": {
             "200": {
@@ -13172,7 +13171,7 @@
             "Filesystem"
           ],
           "summary": "Get available space in an organization",
-          "description": "Returns the total unprovisioned and reclaimable SSD space available for new or existing filesystems within the user organization.",
+          "description": "Returns the total unprovisioned and reclaimable SSD space available for new or existing filesystems within the user's organization.",
           "operationId": "getFreeSpaceInOrg",
           "responses": {
             "200": {
@@ -13574,7 +13573,7 @@
                     "ip": {
                       "type": "string",
                       "example": "173.21.11.41",
-                      "description": "Management IP; If empty, the hostname is resolved; If host is highly-available or mixed-networking, use IP set <ip>+<ip>+...+<ip>."
+                      "description": "Management IP; If empty, the hostname is resolved; If host is highly-available or mixed-networking, use IP set '<ip>+<ip>+...+<ip>'."
                     },
                     "no_wait": {
                       "type": "boolean",
@@ -13684,7 +13683,7 @@
                     },
                     "cores": {
                       "type": "number",
-                      "description": "Dedicate host\"s cores to WEKA.",
+                      "description": "Dedicate host's cores to weka.",
                       "example": 1
                     },
                     "frontend_dedicated_cores": {
@@ -13717,7 +13716,7 @@
                     },
                     "bandwidth": {
                       "type": "number",
-                      "description": "Limit weka\"s bandwidth for the host.",
+                      "description": "Limit weka's bandwidth for the host.",
                       "example": 1000
                     },
                     "auto_remove_timeout": {
@@ -13726,7 +13725,7 @@
                     },
                     "management_ips": {
                       "type": "array",
-                      "description": "Set the host\"s management node IPs. Setting 2 IPs will turn this hosts networking into highly-available mode.",
+                      "description": "Set the host's management node IPs. Setting 2 IPs will turn this hosts networking into highly-available mode.",
                       "items": {
                         "type": "string",
                         "example": "173.21.11.41"
@@ -14214,7 +14213,7 @@
                     },
                     "ips": {
                       "type": "array",
-                      "description": "IPs to be allocated to cores using the device. If not given - IPs may be set automatically according the interface\"s IPs, or taken from the default networking IPs pool (format - A.B.C.D-E.F.G.H or A.B.C.D-F.G.H or A.B.C.D-G.H or A.B.C.D-H).",
+                      "description": "IPs to be allocated to cores using the device. If not given - IPs may be set automatically according the interface's IPs, or taken from the default networking IPs pool (format - A.B.C.D-E.F.G.H or A.B.C.D-F.G.H or A.B.C.D-G.H or A.B.C.D-H).",
                       "items": {
                         "type": "string",
                         "example": "172.31.4.107"
@@ -14832,7 +14831,7 @@
                   "properties": {
                     "port": {
                       "type": "string",
-                      "description": "Port\"s device. (e.g. eth1).",
+                      "description": "Port's device. (e.g. eth1).",
                       "example": "eth0"
                     }
                   }
@@ -14848,7 +14847,7 @@
             "Interface group"
           ],
           "summary": "Add a port to an interface group",
-          "description": "Assigns a network port from a specific container to an interface group,<br> making that container a potential host for the group\"s floating IPs.",
+          "description": "Assigns a network port from a specific container to an interface group,<br> making that container a potential host for the group's floating IPs.",
           "operationId": "addPortToInterfaceGroup",
           "parameters": [
             {
@@ -14893,7 +14892,7 @@
                   "properties": {
                     "port": {
                       "type": "string",
-                      "description": "The port\"s device name, for example, `eth1`.",
+                      "description": "The port's device name, for example, `eth1`.",
                       "example": "eth0"
                     }
                   }
@@ -14963,7 +14962,7 @@
             "Interface group"
           ],
           "summary": "Remove a port from an interface group",
-          "description": "Removes a container\"s network port from an interface group, preventing it from hosting the group\"s floating IPs.",
+          "description": "Removes a container's network port from an interface group, preventing it from hosting the group's floating IPs.",
           "operationId": "deletePortFromInterfaceGroup",
           "parameters": [
             {
@@ -15123,7 +15122,7 @@
             "Interface group"
           ],
           "summary": "Add a port to an interface group",
-          "description": "Assigns a network port from a specific server to an interface group,<br> making that server a potential host for the group\"s floating IPs.",
+          "description": "Assigns a network port from a specific server to an interface group,<br> making that server a potential host for the group's floating IPs.",
           "operationId": "interfaceGroupAddPort",
           "requestBody": {
             "required": true,
@@ -15652,7 +15651,7 @@
                     "user_revocation_attribute": {
                       "type": "string",
                       "example": "isRevoked",
-                      "description": "Indicates a user account\"s revocation status."
+                      "description": "Indicates a user account's revocation status."
                     },
                     "group_object_class": {
                       "type": "string",
@@ -15987,7 +15986,7 @@
       "/login": {
         "post": {
           "summary": "Log in to the cluster",
-          "description": "Authenticates and grants access to the cluster using valid credentials.<br> Securely saves user credentials in the user\"s home directory upon successful login.",
+          "description": "Authenticates and grants access to the cluster using valid credentials.<br> Securely saves user credentials in the user's home directory upon successful login.",
           "operationId": "login",
           "tags": [
             "Login"
@@ -16025,17 +16024,17 @@
                   "properties": {
                     "username": {
                       "type": "string",
-                      "description": "User\"s username.",
+                      "description": "User's username.",
                       "example": "admin"
                     },
                     "password": {
                       "type": "string",
-                      "description": "User\"s password.",
+                      "description": "User's password.",
                       "example": "Password123"
                     },
                     "org": {
                       "type": "string",
-                      "description": "Organization name, default Root.",
+                      "description": "Organization name, default 'Root'.",
                       "example": "root"
                     }
                   }
@@ -16309,7 +16308,7 @@
             "NetworkSpace"
           ],
           "summary": "List network spaces",
-          "description": "List the cluster\"s network spaces. Optionally filter by tenant.",
+          "description": "List the cluster's network spaces. Optionally filter by tenant.",
           "operationId": "getNetworkSpaces",
           "parameters": [
             {
@@ -16474,7 +16473,7 @@
             "NetworkSpace"
           ],
           "summary": "Update a network space",
-          "description": "Update an existing network space\"s VLAN and IP pool configuration.",
+          "description": "Update an existing network space's VLAN and IP pool configuration.",
           "operationId": "updateNetworkSpace",
           "parameters": [
             {
@@ -16972,7 +16971,7 @@
             "NFS"
           ],
           "summary": "Remove an NFS permission",
-          "description": "Revokes a client group\"s access to a filesystem by removing a specific NFS permission.",
+          "description": "Revokes a client group's access to a filesystem by removing a specific NFS permission.",
           "operationId": "deleteNfsPermission",
           "parameters": [
             {
@@ -17997,7 +17996,7 @@
             "NFS"
           ],
           "summary": "Set up host-based LDAP resolution for NFS",
-          "description": "Enables NFS group resolution through the server\"s LDAP client. This supports over 16 groups by using host providers like SSSD.",
+          "description": "Enables NFS group resolution through the server's LDAP client. This supports over 16 groups by using host providers like SSSD.",
           "operationId": "setNfsUseOnHostLdapClient",
           "responses": {
             "200": {
@@ -20985,7 +20984,7 @@
             "S3"
           ],
           "summary": "Get S3 settings for the calling tenant",
-          "description": "Returns the calling tenant\"s effective S3 default filesystem and anonymous POSIX UID/GID.\nDefault filesystem falls back to the cluster-wide default when no tenant override is set.\n",
+          "description": "Returns the calling tenant's effective S3 default filesystem and anonymous POSIX UID/GID.\nDefault filesystem falls back to the cluster-wide default when no tenant override is set.\n",
           "operationId": "getS3TenantSetup",
           "responses": {
             "200": {
@@ -21025,7 +21024,7 @@
             "S3"
           ],
           "summary": "Update S3 settings for the calling tenant",
-          "description": "Sets the calling tenant\"s S3 default filesystem and/or anonymous POSIX UID/GID.\nUID and GID must be set together. At least one parameter must be provided.\n",
+          "description": "Sets the calling tenant's S3 default filesystem and/or anonymous POSIX UID/GID.\nUID and GID must be set together. At least one parameter must be provided.\n",
           "operationId": "setS3TenantSetup",
           "requestBody": {
             "required": true,
@@ -21160,11 +21159,11 @@
                     },
                     "existing_path": {
                       "type": "string",
-                      "description": "bucket\"s existing path."
+                      "description": "bucket's existing path."
                     },
                     "fs_uid": {
                       "type": "string",
-                      "description": "bucket\"s filesystem\"s uid."
+                      "description": "bucket's filesystem's uid."
                     }
                   }
                 }
@@ -22954,7 +22953,7 @@
             "S3"
           ],
           "summary": "Update an S3 user through LDAP authentication",
-          "description": "Updates an S3 user\"s credentials and policy through LDAP authentication in tenant 0. Use /s3/{tenantId}/ldapImportUser for other tenants.",
+          "description": "Updates an S3 user's credentials and policy through LDAP authentication in tenant 0. Use /s3/{tenantId}/ldapImportUser for other tenants.",
           "operationId": "ldapUpdateS3User",
           "security": [
             {
@@ -23118,7 +23117,7 @@
             "S3"
           ],
           "summary": "Update an S3 user through LDAP authentication in specific tenant",
-          "description": "Updates an S3 user\"s credentials and policy through LDAP authentication for the specified tenant.",
+          "description": "Updates an S3 user's credentials and policy through LDAP authentication for the specified tenant.",
           "operationId": "ldapUpdateS3UserForTenant",
           "security": [
             {
@@ -23721,7 +23720,7 @@
             "Security"
           ],
           "summary": "Get CA certificate details and status",
-          "description": "Returns comprehensive information about the cluster\"s currently configured CA certificate, including its status, certificate metadata, and content. Use this endpoint to verify certificate configuration and expiration dates.",
+          "description": "Returns comprehensive information about the cluster's currently configured CA certificate, including its status, certificate metadata, and content. Use this endpoint to verify certificate configuration and expiration dates.",
           "operationId": "showCaCert",
           "responses": {
             "200": {
@@ -23742,37 +23741,37 @@
                           "country": {
                             "type": "string",
                             "example": "IL",
-                            "description": "Country code from the certificate\"s subject."
+                            "description": "Country code from the certificate's subject."
                           },
                           "state": {
                             "type": "string",
                             "example": "TA",
-                            "description": "State or province from the certificate\"s subject."
+                            "description": "State or province from the certificate's subject."
                           },
                           "locality": {
                             "type": "string",
                             "example": "Tel-Aviv",
-                            "description": "City or locality from the certificate\"s subject."
+                            "description": "City or locality from the certificate's subject."
                           },
                           "organization": {
                             "type": "string",
                             "example": "company",
-                            "description": "Organization name from the certificate\"s subject."
+                            "description": "Organization name from the certificate's subject."
                           },
                           "organization_unit": {
                             "type": "string",
                             "example": "qa",
-                            "description": "Organizational unit from the certificate\"s subject."
+                            "description": "Organizational unit from the certificate's subject."
                           },
                           "common_name": {
                             "type": "string",
                             "example": "t1831-*.company.io",
-                            "description": "Common name (CN) from the certificate\"s subject."
+                            "description": "Common name (CN) from the certificate's subject."
                           },
                           "email": {
                             "type": "string",
                             "example": "mail@company.io",
-                            "description": "Email address from the certificate\"s subject."
+                            "description": "Email address from the certificate's subject."
                           },
                           "expired_date": {
                             "type": "string",
@@ -23844,7 +23843,7 @@
                     },
                     "description": {
                       "type": "string",
-                      "description": "Human-readable explanation of the policy\"s purpose and scope.",
+                      "description": "Human-readable explanation of the policy's purpose and scope.",
                       "example": "Allows admin access from admin workstations"
                     },
                     "action": {
@@ -23916,7 +23915,7 @@
       "/security/policies/{policy}": {
         "get": {
           "summary": "Get a specific security policy",
-          "description": "Returns detailed configuration information for a specific security policy identified by its UUID. This includes the policy\"s name, description, action, roles, IP ranges, and read-only status.",
+          "description": "Returns detailed configuration information for a specific security policy identified by its UUID. This includes the policy's name, description, action, roles, IP ranges, and read-only status.",
           "operationId": "getSecPolicy",
           "responses": {
             "200": {
@@ -25054,7 +25053,7 @@
                     "joined_domain_mapping_to_id": {
                       "type": "number",
                       "example": 4290000000,
-                      "description": "The joined domain\"s last ID."
+                      "description": "The joined domain's last ID."
                     },
                     "encryption": {
                       "type": "string",
@@ -25230,12 +25229,12 @@
                     },
                     "mapping_from_id": {
                       "type": "number",
-                      "description": "Starting ID for this domain\"s UID/GID mapping range (must not overlap with existing ranges).",
+                      "description": "Starting ID for this domain's UID/GID mapping range (must not overlap with existing ranges).",
                       "example": 4291000001
                     },
                     "mapping_to_id": {
                       "type": "number",
-                      "description": "Ending ID for this domain\"s UID/GID mapping range (inclusive).",
+                      "description": "Ending ID for this domain's UID/GID mapping range (inclusive).",
                       "example": 4294967294
                     }
                   }
@@ -25407,7 +25406,7 @@
                     },
                     "encryption": {
                       "type": "string",
-                      "description": "Share-specific encryption policy. Options include cluster_default (inherit cluster-level encryption setting), desired (encrypt if client supports it, otherwise allow unencrypted), or required (reject connections from clients that do not support encryption).",
+                      "description": "Share-specific encryption policy. Options include cluster_default (inherit cluster-level encryption setting), desired (encrypt if client supports it, otherwise allow unencrypted), or required (reject connections from clients that don't support encryption).",
                       "enum": [
                         "cluster_default",
                         "desired",
@@ -25551,7 +25550,7 @@
                     "properties": {
                       "data": {
                         "type": "string",
-                        "example": "Deleted account for WEKASMB in realm AD.COMPANY>COM\\n"
+                        "example": "Deleted account for 'WEKASMB' in realm 'AD.COMPANY>COM'\\n"
                       }
                     }
                   }
@@ -25787,7 +25786,7 @@
             "SMB"
           ],
           "summary": "Grant share access to users",
-          "description": "Adds specified users or groups to a share\"s access control list with designated permission level.<br> Users can be Active Directory users, groups, or domain aliases.",
+          "description": "Adds specified users or groups to a share's access control list with designated permission level.<br> Users can be Active Directory users, groups, or domain aliases.",
           "operationId": "addUserToSamba",
           "responses": {
             "200": {
@@ -26019,7 +26018,7 @@
             "SMB"
           ],
           "summary": "Remove containers from SMB cluster",
-          "description": "Removes specified containers from the SMB cluster. Client connections on the removed containers migrate to the remaining active containers in the cluster.<br> Use this operation to decommission containers for maintenance or to reduce the cluster size during periods of low demand.<br> Before proceeding, ensure that at least one container remains in the cluster and that the removal does not violate the cluster\"s minimum redundancy requirements.",
+          "description": "Removes specified containers from the SMB cluster. Client connections on the removed containers migrate to the remaining active containers in the cluster.<br> Use this operation to decommission containers for maintenance or to reduce the cluster size during periods of low demand.<br> Before proceeding, ensure that at least one container remains in the cluster and that the removal does not violate the cluster's minimum redundancy requirements.",
           "operationId": "deleteSambaServers",
           "responses": {
             "200": {
@@ -26343,7 +26342,7 @@
             "Snapshot Policy"
           ],
           "summary": "Attach filesystems to snapshot policy",
-          "description": "Associates one or more filesystems with a snapshot policy, applying the policy\"s scheduling and retention rules to the specified filesystems.",
+          "description": "Associates one or more filesystems with a snapshot policy, applying the policy's scheduling and retention rules to the specified filesystems.",
           "operationId": "attachFsToSnapshotPolicy",
           "parameters": [
             {
@@ -26798,7 +26797,7 @@
             "Snapshots"
           ],
           "summary": "Update snapshot configuration",
-          "description": "Modifies snapshot name or access point. The snapshot\"s data and point-in-time state remain unchanged.",
+          "description": "Modifies snapshot name or access point. The snapshot's data and point-in-time state remain unchanged.",
           "operationId": "updateSnapshot",
           "responses": {
             "200": {
@@ -26977,7 +26976,7 @@
                           },
                           "locator": {
                             "type": "string",
-                            "description": "Unique locator string identifying the snapshot\"s location in object store. Required for downloading or restoring the snapshot.",
+                            "description": "Unique locator string identifying the snapshot's location in object store. Required for downloading or restoring the snapshot.",
                             "example": "59c2ddf9/d/s/16/spec/b365-4e7a-b924-b2f0956b7f9c"
                           }
                         }
@@ -27187,7 +27186,7 @@
                     },
                     "locator": {
                       "type": "string",
-                      "description": "Unique locator string identifying the snapshot\"s location (returned during upload).",
+                      "description": "Unique locator string identifying the snapshot's location (returned during upload).",
                       "example": "bba696fb/d/s/4/spec/fc35-4d51-96b6-028488d349dc"
                     }
                   }
@@ -27546,7 +27545,7 @@
             "Stats"
           ],
           "summary": "Get statistics",
-          "description": "Returns statistics related to the cluster\"s performance and resource usage.",
+          "description": "Returns statistics related to the cluster's performance and resource usage.",
           "operationId": "getStats",
           "responses": {
             "200": {
@@ -28444,7 +28443,7 @@
                       "items": {
                         "type": "string"
                       },
-                      "description": "Operations to track (use All or specify individual operations like Open, Create, Delete).",
+                      "description": "Operations to track (use 'All' or specify individual operations like 'Open', 'Create', 'Delete').",
                       "example": [
                         "Create",
                         "Delete"
@@ -28696,7 +28695,7 @@
             "Telemetry"
           ],
           "summary": "Attach data sources to export",
-          "description": "Associates one or more data sources (for example, Audit) with an export destination to begin forwarding that data type.",
+          "description": "Associates one or more data sources (for example, 'Audit') with an export destination to begin forwarding that data type.",
           "operationId": "attachTelemetrySourceToExport",
           "parameters": [
             {
@@ -30349,7 +30348,7 @@
                     },
                     "org": {
                       "type": "string",
-                      "description": "Tenant name or ID to create the user in (cluster admin only). Defaults to the caller\"s tenant.",
+                      "description": "Tenant name or ID to create the user in (cluster admin only). Defaults to the caller's tenant.",
                       "example": "tenant1"
                     }
                   }
@@ -30488,7 +30487,7 @@
       "/users/password": {
         "put": {
           "summary": "Change user password",
-          "description": "Updates a user\"s password. Users can change their own password with their current credentials.<br> Administrators can change any user\"s password within their organization.",
+          "description": "Updates a user's password. Users can change their own password with their current credentials.<br> Administrators can change any user's password within their organization.",
           "operationId": "updateUserPassword",
           "tags": [
             "User"
@@ -30522,7 +30521,7 @@
                     },
                     "tenant": {
                       "type": "string",
-                      "description": "Tenant name (defaults to Root).",
+                      "description": "Tenant name (defaults to 'Root').",
                       "example": "root"
                     }
                   }
@@ -30711,7 +30710,7 @@
                   "properties": {
                     "org": {
                       "type": "string",
-                      "description": "Tenant name or ID (cluster admin only). Defaults to the caller\"s tenant.",
+                      "description": "Tenant name or ID (cluster admin only). Defaults to the caller's tenant.",
                       "example": "tenant1"
                     }
                   }
@@ -30757,9 +30756,6 @@
           }
         }
       }
-    }
-  },
-  "tags",
-  ":",
-  []
-]
+    },
+    "tags": []
+  }
