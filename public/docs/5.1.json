@@ -12486,6 +12486,706 @@
           ]
         }
       },
+      "/fileSystems/{uid}/quota/user": {
+        "get": {
+          "tags": [
+            "Quota"
+          ],
+          "summary": "List user quotas",
+          "description": "Returns all user quotas for a specific filesystem.",
+          "operationId": "listUserQuotas",
+          "responses": {
+            "200": {
+              "description": "",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "uid_or_gid": {
+                              "type": "number",
+                              "example": 1000
+                            },
+                            "total_bytes": {
+                              "type": "integer",
+                              "format": "int64",
+                              "example": 8192
+                            },
+                            "grace_seconds": {
+                              "type": "number",
+                              "example": null
+                            },
+                            "hard_limit_bytes": {
+                              "type": "integer",
+                              "format": "int64",
+                              "example": 1000001536
+                            },
+                            "soft_limit_bytes": {
+                              "type": "integer",
+                              "format": "int64",
+                              "example": 0
+                            }
+                          }
+                        }
+                      },
+                      "next_token": {
+                        "type": "number",
+                        "example": 3214121
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "parameters": [
+            {
+              "in": "path",
+              "name": "uid",
+              "required": true,
+              "schema": {
+                "type": "string"
+              },
+              "description": "The unique identifier of the filesystem."
+            },
+            {
+              "in": "query",
+              "name": "next_token",
+              "schema": {
+                "type": "string"
+              },
+              "description": "Token to get the next page."
+            }
+          ]
+        },
+        "post": {
+          "tags": [
+            "Quota"
+          ],
+          "summary": "Set a user quota",
+          "description": "Sets or updates a quota for a specific user on a filesystem.",
+          "operationId": "setUserQuota",
+          "responses": {
+            "200": {
+              "description": ""
+            }
+          },
+          "parameters": [
+            {
+              "in": "path",
+              "name": "uid",
+              "required": true,
+              "schema": {
+                "type": "string"
+              },
+              "description": "The unique identifier of the filesystem."
+            },
+            {
+              "in": "query",
+              "name": "user_id",
+              "required": true,
+              "schema": {
+                "type": "integer"
+              },
+              "description": "The user ID (UID) to set a quota for."
+            },
+            {
+              "in": "query",
+              "name": "hard_limit_bytes",
+              "schema": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "description": "Hard limit in bytes. 0 for unlimited."
+            },
+            {
+              "in": "query",
+              "name": "soft_limit_bytes",
+              "schema": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "description": "Soft limit in bytes. 0 for unlimited."
+            },
+            {
+              "in": "query",
+              "name": "grace_seconds",
+              "schema": {
+                "type": "integer"
+              },
+              "description": "Grace period in seconds after soft limit is exceeded."
+            }
+          ]
+        },
+        "delete": {
+          "tags": [
+            "Quota"
+          ],
+          "summary": "Remove a user quota",
+          "description": "Removes the quota for a specific user on a filesystem.",
+          "operationId": "unsetUserQuota",
+          "responses": {
+            "200": {
+              "description": ""
+            }
+          },
+          "parameters": [
+            {
+              "in": "path",
+              "name": "uid",
+              "required": true,
+              "schema": {
+                "type": "string"
+              },
+              "description": "The unique identifier of the filesystem."
+            },
+            {
+              "in": "query",
+              "name": "user_id",
+              "required": true,
+              "schema": {
+                "type": "integer"
+              },
+              "description": "The user ID (UID) whose quota to remove."
+            }
+          ]
+        }
+      },
+      "/fileSystems/{uid}/quota/user/default": {
+        "get": {
+          "tags": [
+            "Quota"
+          ],
+          "summary": "Get default user quota",
+          "description": "Returns the default quota applied to new users on a filesystem.",
+          "operationId": "getDefaultUserQuota",
+          "responses": {
+            "200": {
+              "description": "",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "type": "object",
+                        "properties": {
+                          "hard_limit_bytes": {
+                            "type": "integer",
+                            "format": "int64",
+                            "example": 1000001536
+                          },
+                          "soft_limit_bytes": {
+                            "type": "integer",
+                            "format": "int64",
+                            "example": 0
+                          },
+                          "grace_seconds": {
+                            "type": "integer",
+                            "example": null
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "parameters": [
+            {
+              "in": "path",
+              "name": "uid",
+              "required": true,
+              "schema": {
+                "type": "string"
+              },
+              "description": "The unique identifier of the filesystem."
+            }
+          ]
+        },
+        "post": {
+          "tags": [
+            "Quota"
+          ],
+          "summary": "Set default user quota",
+          "description": "Sets the default quota applied to new users on a filesystem.",
+          "operationId": "setDefaultUserQuota",
+          "responses": {
+            "200": {
+              "description": ""
+            }
+          },
+          "parameters": [
+            {
+              "in": "path",
+              "name": "uid",
+              "required": true,
+              "schema": {
+                "type": "string"
+              },
+              "description": "The unique identifier of the filesystem."
+            },
+            {
+              "in": "query",
+              "name": "hard_limit_bytes",
+              "schema": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "description": "Hard limit in bytes. 0 for unlimited."
+            },
+            {
+              "in": "query",
+              "name": "soft_limit_bytes",
+              "schema": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "description": "Soft limit in bytes. 0 for unlimited."
+            },
+            {
+              "in": "query",
+              "name": "grace_seconds",
+              "schema": {
+                "type": "integer"
+              },
+              "description": "Grace period in seconds after soft limit is exceeded."
+            }
+          ]
+        },
+        "delete": {
+          "tags": [
+            "Quota"
+          ],
+          "summary": "Remove default user quota",
+          "description": "Removes the default user quota from a filesystem.",
+          "operationId": "unsetDefaultUserQuota",
+          "responses": {
+            "200": {
+              "description": ""
+            }
+          },
+          "parameters": [
+            {
+              "in": "path",
+              "name": "uid",
+              "required": true,
+              "schema": {
+                "type": "string"
+              },
+              "description": "The unique identifier of the filesystem."
+            }
+          ]
+        }
+      },
+      "/fileSystems/{uid}/quota/user/enable": {
+        "post": {
+          "tags": [
+            "Quota"
+          ],
+          "summary": "Enable user quota accounting",
+          "description": "Enables user quota accounting on a filesystem. This triggers a background coloring task to account for existing usage.",
+          "operationId": "enableUserQuotas",
+          "responses": {
+            "200": {
+              "description": ""
+            }
+          },
+          "parameters": [
+            {
+              "in": "path",
+              "name": "uid",
+              "required": true,
+              "schema": {
+                "type": "string"
+              },
+              "description": "The unique identifier of the filesystem."
+            },
+            {
+              "in": "query",
+              "name": "force",
+              "schema": {
+                "type": "boolean"
+              },
+              "description": "Force enable even if already enabled."
+            }
+          ]
+        }
+      },
+      "/fileSystems/{uid}/quota/user/disable": {
+        "post": {
+          "tags": [
+            "Quota"
+          ],
+          "summary": "Disable user quota accounting",
+          "description": "Disables user quota accounting on a filesystem.",
+          "operationId": "disableUserQuotas",
+          "responses": {
+            "200": {
+              "description": ""
+            }
+          },
+          "parameters": [
+            {
+              "in": "path",
+              "name": "uid",
+              "required": true,
+              "schema": {
+                "type": "string"
+              },
+              "description": "The unique identifier of the filesystem."
+            }
+          ]
+        }
+      },
+      "/fileSystems/{uid}/quota/user/status": {
+        "get": {
+          "tags": [
+            "Quota"
+          ],
+          "summary": "Get user quota accounting status",
+          "description": "Returns the user quota accounting state for a filesystem.",
+          "operationId": "getUserQuotasStatus",
+          "responses": {
+            "200": {
+              "description": "",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "type": "string",
+                        "enum": [
+                          "NONE",
+                          "PARTIALLY_ACCOUNTED",
+                          "FULLY_ACCOUNTED"
+                        ],
+                        "example": "FULLY_ACCOUNTED"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "parameters": [
+            {
+              "in": "path",
+              "name": "uid",
+              "required": true,
+              "schema": {
+                "type": "string"
+              },
+              "description": "The unique identifier of the filesystem."
+            }
+          ]
+        }
+      },
+      "/fileSystems/{uid}/quota/group": {
+        "get": {
+          "tags": [
+            "Quota"
+          ],
+          "summary": "List group quotas",
+          "description": "Returns all group quotas for a specific filesystem.",
+          "operationId": "listGroupQuotas",
+          "responses": {
+            "200": {
+              "description": "",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "uid_or_gid": {
+                              "type": "number",
+                              "example": 1000
+                            },
+                            "total_bytes": {
+                              "type": "integer",
+                              "format": "int64",
+                              "example": 8192
+                            },
+                            "grace_seconds": {
+                              "type": "number",
+                              "example": null
+                            },
+                            "hard_limit_bytes": {
+                              "type": "integer",
+                              "format": "int64",
+                              "example": 1000001536
+                            },
+                            "soft_limit_bytes": {
+                              "type": "integer",
+                              "format": "int64",
+                              "example": 0
+                            }
+                          }
+                        }
+                      },
+                      "next_token": {
+                        "type": "number",
+                        "example": 3214121
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "parameters": [
+            {
+              "in": "path",
+              "name": "uid",
+              "required": true,
+              "schema": {
+                "type": "string"
+              },
+              "description": "The unique identifier of the filesystem."
+            },
+            {
+              "in": "query",
+              "name": "next_token",
+              "schema": {
+                "type": "string"
+              },
+              "description": "Token to get the next page."
+            }
+          ]
+        },
+        "post": {
+          "tags": [
+            "Quota"
+          ],
+          "summary": "Set a group quota",
+          "description": "Sets or updates a quota for a specific group on a filesystem.",
+          "operationId": "setGroupQuota",
+          "responses": {
+            "200": {
+              "description": ""
+            }
+          },
+          "parameters": [
+            {
+              "in": "path",
+              "name": "uid",
+              "required": true,
+              "schema": {
+                "type": "string"
+              },
+              "description": "The unique identifier of the filesystem."
+            },
+            {
+              "in": "query",
+              "name": "gid",
+              "required": true,
+              "schema": {
+                "type": "integer"
+              },
+              "description": "The group ID (GID) to set a quota for."
+            },
+            {
+              "in": "query",
+              "name": "hard_limit_bytes",
+              "schema": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "description": "Hard limit in bytes. 0 for unlimited."
+            },
+            {
+              "in": "query",
+              "name": "soft_limit_bytes",
+              "schema": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "description": "Soft limit in bytes. 0 for unlimited."
+            },
+            {
+              "in": "query",
+              "name": "grace_seconds",
+              "schema": {
+                "type": "integer"
+              },
+              "description": "Grace period in seconds after soft limit is exceeded."
+            }
+          ]
+        },
+        "delete": {
+          "tags": [
+            "Quota"
+          ],
+          "summary": "Remove a group quota",
+          "description": "Removes the quota for a specific group on a filesystem.",
+          "operationId": "unsetGroupQuota",
+          "responses": {
+            "200": {
+              "description": ""
+            }
+          },
+          "parameters": [
+            {
+              "in": "path",
+              "name": "uid",
+              "required": true,
+              "schema": {
+                "type": "string"
+              },
+              "description": "The unique identifier of the filesystem."
+            },
+            {
+              "in": "query",
+              "name": "gid",
+              "required": true,
+              "schema": {
+                "type": "integer"
+              },
+              "description": "The group ID (GID) whose quota to remove."
+            }
+          ]
+        }
+      },
+      "/fileSystems/{uid}/quota/group/default": {
+        "get": {
+          "tags": [
+            "Quota"
+          ],
+          "summary": "Get default group quota",
+          "description": "Returns the default quota applied to new groups on a filesystem.",
+          "operationId": "getDefaultGroupQuota",
+          "responses": {
+            "200": {
+              "description": "",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "type": "object",
+                        "properties": {
+                          "hard_limit_bytes": {
+                            "type": "integer",
+                            "format": "int64",
+                            "example": 1000001536
+                          },
+                          "soft_limit_bytes": {
+                            "type": "integer",
+                            "format": "int64",
+                            "example": 0
+                          },
+                          "grace_seconds": {
+                            "type": "integer",
+                            "example": null
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "parameters": [
+            {
+              "in": "path",
+              "name": "uid",
+              "required": true,
+              "schema": {
+                "type": "string"
+              },
+              "description": "The unique identifier of the filesystem."
+            }
+          ]
+        },
+        "post": {
+          "tags": [
+            "Quota"
+          ],
+          "summary": "Set default group quota",
+          "description": "Sets the default quota applied to new groups on a filesystem.",
+          "operationId": "setDefaultGroupQuota",
+          "responses": {
+            "200": {
+              "description": ""
+            }
+          },
+          "parameters": [
+            {
+              "in": "path",
+              "name": "uid",
+              "required": true,
+              "schema": {
+                "type": "string"
+              },
+              "description": "The unique identifier of the filesystem."
+            },
+            {
+              "in": "query",
+              "name": "hard_limit_bytes",
+              "schema": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "description": "Hard limit in bytes. 0 for unlimited."
+            },
+            {
+              "in": "query",
+              "name": "soft_limit_bytes",
+              "schema": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "description": "Soft limit in bytes. 0 for unlimited."
+            },
+            {
+              "in": "query",
+              "name": "grace_seconds",
+              "schema": {
+                "type": "integer"
+              },
+              "description": "Grace period in seconds after soft limit is exceeded."
+            }
+          ]
+        },
+        "delete": {
+          "tags": [
+            "Quota"
+          ],
+          "summary": "Remove default group quota",
+          "description": "Removes the default group quota from a filesystem.",
+          "operationId": "unsetDefaultGroupQuota",
+          "responses": {
+            "200": {
+              "description": ""
+            }
+          },
+          "parameters": [
+            {
+              "in": "path",
+              "name": "uid",
+              "required": true,
+              "schema": {
+                "type": "string"
+              },
+              "description": "The unique identifier of the filesystem."
+            }
+          ]
+        }
+      },
       "/fileSystems/{uid}/objectStoreBuckets/{obs_uid}": {
         "delete": {
           "tags": [
@@ -20796,7 +21496,6 @@
                 "schema": {
                   "type": "object",
                   "required": [
-                    "default_fs_name",
                     "config_fs_name",
                     "key",
                     "secret"
@@ -20804,7 +21503,8 @@
                   "properties": {
                     "default_fs_name": {
                       "type": "string",
-                      "description": "Default filesystem name.",
+                      "nullable": true,
+                      "description": "Default filesystem name. Optional; may be omitted or null to create a cluster without a default filesystem.",
                       "example": "default"
                     },
                     "config_fs_name": {
@@ -21024,7 +21724,7 @@
             "S3"
           ],
           "summary": "Update S3 settings for the calling tenant",
-          "description": "Sets the calling tenant's S3 default filesystem and/or anonymous POSIX UID/GID.\nUID and GID must be set together. At least one parameter must be provided.\n",
+          "description": "Sets the calling tenant's S3 default filesystem and/or anonymous POSIX UID/GID.\nUID and GID must be set together. At least one parameter must be provided.\n`default_fs_name` and `clear_default_filesystem` are mutually exclusive.\n",
           "operationId": "setS3TenantSetup",
           "requestBody": {
             "required": true,
@@ -21037,6 +21737,11 @@
                       "type": "string",
                       "description": "Default filesystem name for new buckets created via the S3 API.",
                       "example": "default"
+                    },
+                    "clear_default_filesystem": {
+                      "type": "boolean",
+                      "description": "Clear the tenant's default filesystem. Cannot be combined with `default_fs_name`.",
+                      "example": true
                     },
                     "anonymous_posix_uid": {
                       "type": "number",
