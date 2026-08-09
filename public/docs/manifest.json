@@ -1,0 +1,10 @@
+{
+  "4.4": {
+    "ref": "REL/4.4.35",
+    "wekapp_sha": "59dfad231b2d1b0089e6a7184688dc91bd354565",
+    "swagger_jsdoc": "5.0.1",
+    "generated_at": "2026-08-09T06:18:17Z",
+    "published_by": "demianweka",
+    "run_url": "https://github.com/weka/wekapp/actions/runs/31298559444"
+  }
+}
