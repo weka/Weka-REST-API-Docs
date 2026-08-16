@@ -6,5 +6,13 @@
     "generated_at": "2026-08-09T06:18:17Z",
     "published_by": "demianweka",
     "run_url": "https://github.com/weka/wekapp/actions/runs/31298559444"
+  },
+  "5.1": {
+    "ref": "REL/5.1.31",
+    "wekapp_sha": "56d445a07d7f9a38db73c19e885048793e0016fb",
+    "swagger_jsdoc": "6.2.8",
+    "generated_at": "2026-08-16T13:28:31Z",
+    "published_by": "demianweka",
+    "run_url": "https://github.com/weka/wekapp/actions/runs/31949889683"
   }
 }
