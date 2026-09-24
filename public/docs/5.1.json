@@ -364,7 +364,7 @@
                         "example": "NodeId<101>"
                     },
                     "percentage_used": {
-                        "type": "string",
+                        "type": "integer",
                         "example": 0
                     },
                     "removed_time": {
@@ -8616,6 +8616,7 @@
                 ],
                 "summary": "Get WEKA Home proxy URL",
                 "description": "Returns the configured proxy URL for accessing WEKA Home.",
+                "operationId": "getCloudProxy",
                 "responses": {
                     "200": {
                         "description": "",
@@ -9191,6 +9192,14 @@
                                                             "type": "boolean",
                                                             "example": true
                                                         },
+                                                        "movingQuorums": {
+                                                            "type": "boolean",
+                                                            "example": false
+                                                        },
+                                                        "movingData": {
+                                                            "type": "boolean",
+                                                            "example": false
+                                                        },
                                                         "totalCopiesMiB": {
                                                             "type": "number",
                                                             "example": 0
@@ -9472,8 +9481,18 @@
                                                             "example": true
                                                         },
                                                         "node_with_least_links": {
-                                                            "type": "string",
-                                                            "example": ""
+                                                            "type": "object",
+                                                            "nullable": true,
+                                                            "properties": {
+                                                                "nid": {
+                                                                    "type": "string",
+                                                                    "example": "NodeId<101>"
+                                                                },
+                                                                "missing_links": {
+                                                                    "type": "number",
+                                                                    "example": 2
+                                                                }
+                                                            }
                                                         }
                                                     }
                                                 },
@@ -26422,6 +26441,7 @@
                 ],
                 "summary": "Create a CIDR-based security policy",
                 "description": "Creates a new security policy to regulate access to cluster management and POSIX data services. These policies strengthen security by permitting or blocking connections from specific client IP address ranges without requiring user authentication. Policies are evaluated in order of attachment, and updates do not affect active connections.",
+                "operationId": "createSecPolicy",
                 "responses": {
                     "200": {
                         "description": "Security policy created successfully.",
@@ -26614,6 +26634,7 @@
                 ],
                 "summary": "Update an existing security policy",
                 "description": "Modifies the configuration of an existing security policy. You can replace entire role or IP lists, or incrementally add/remove specific entries. Changes take effect immediately for new connections but do not impact existing active sessions.",
+                "operationId": "updateSecPolicy",
                 "responses": {
                     "200": {
                         "description": "Security policy updated successfully.",
@@ -26764,6 +26785,7 @@
                 ],
                 "summary": "Duplicate an existing security policy",
                 "description": "Creates a new security policy by copying all configuration settings from an existing policy. The new policy requires a unique name but inherits all other properties including description, action, roles, IP ranges, and read-only status.",
+                "operationId": "duplicateSecPolicy",
                 "parameters": [
                     {
                         "in": "path",
@@ -27434,6 +27456,7 @@
                 ],
                 "summary": "Run action on multiple servers",
                 "description": "Initiates a specified action across one or more servers in the cluster.<br> This endpoint allows administrators to perform coordinated operations such as stopping, restarting, or applying<br> resource configuration changes to containers running on the targeted servers. <br> Actions are queued and executed based on cluster policies and operational constraints.",
+                "operationId": "setServersRequestedAction",
                 "responses": {
                     "200": {
                         "description": "Action request submitted successfully and queued for execution.",
@@ -29483,6 +29506,7 @@
                 ],
                 "summary": "Delete a snapshot",
                 "description": "Permanently removes a snapshot from the system and frees storage space consumed by its unique data. If the snapshot has been downloaded to another filesystem, deletion may cause that filesystem to malfunction. Ensure downloaded snapshots are un-tiered or migrated before deletion.",
+                "operationId": "deleteSnapshot",
                 "responses": {
                     "200": {
                         "$ref": "#/components/responses/200"
