@@ -5859,6 +5859,76 @@
                         "description": "Process IDs of the proxy nodes serving this IP."
                     }
                 }
+            },
+            "TopRealtimeStatsTotals": {
+                "type": "object",
+                "properties": {
+                    "reads_per_sec": {
+                        "type": "number"
+                    },
+                    "writes_per_sec": {
+                        "type": "number"
+                    },
+                    "ops_per_sec": {
+                        "type": "number"
+                    },
+                    "read_bytes_per_sec": {
+                        "type": "number"
+                    },
+                    "write_bytes_per_sec": {
+                        "type": "number"
+                    },
+                    "bytes_per_sec": {
+                        "type": "number"
+                    },
+                    "read_latency_usecs": {
+                        "type": "number"
+                    },
+                    "write_latency_usecs": {
+                        "type": "number"
+                    },
+                    "average_latency_usecs": {
+                        "type": "number"
+                    },
+                    "cpu_percent": {
+                        "type": "number"
+                    },
+                    "processes": {
+                        "type": "integer"
+                    }
+                }
+            },
+            "TopRealtimeStatsRow": {
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/TopRealtimeStatsTotals"
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "container_id": {
+                                "type": "integer",
+                                "nullable": true,
+                                "description": "Null for server rows."
+                            },
+                            "server_id": {
+                                "type": "string",
+                                "nullable": true,
+                                "description": "The machine uid `GET /servers` returns."
+                            },
+                            "hostname": {
+                                "type": "string"
+                            },
+                            "mode": {
+                                "type": "string",
+                                "enum": [
+                                    "backend",
+                                    "client"
+                                ]
+                            }
+                        }
+                    }
+                ]
             }
         },
         "responses": {
@@ -13440,7 +13510,7 @@
                         "description": "The unique identifier of the inode."
                     }
                 ],
-                "operationId": "filesystemResolveInode",
+                "operationId": "filesystemResolveInodeDeprecated",
                 "responses": {
                     "200": {
                         "description": "",
@@ -23067,7 +23137,7 @@
                     "Quota"
                 ],
                 "summary": "Get a batch of quotas",
-                "operationId": "getQuota",
+                "operationId": "getQuotaBatch",
                 "responses": {
                     "200": {
                         "description": "",
@@ -30502,6 +30572,124 @@
                     },
                     "401": {
                         "$ref": "#/components/responses/401"
+                    }
+                }
+            }
+        },
+        "/stats/realtime/top": {
+            "get": {
+                "tags": [
+                    "Stats"
+                ],
+                "summary": "Get the most active backends and clients",
+                "description": "Returns the top N backend and client containers (or servers) ranked by the leader on IOPS, throughput or average latency, plus totals over the containers visible to the caller, in one small reply that does not grow with the number of clients. Idle containers are left out of the lists but counted in the totals. A tenant-scoped user sees only its own clients (no backends, zero backend totals); a cluster that still rejects tenant callers answers 403.\n",
+                "operationId": "getStatsRealtimeTop",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "mode",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "all",
+                                "backends",
+                                "clients"
+                            ],
+                            "default": "all"
+                        },
+                        "description": "Which lists to rank. With `all` both `backends` and `clients` are returned."
+                    },
+                    {
+                        "in": "query",
+                        "name": "sort_by",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "iops",
+                                "throughput",
+                                "latency"
+                            ],
+                            "default": "iops"
+                        },
+                        "description": "Ranking metric, descending. `latency` ranks by ops-weighted average latency, worst first."
+                    },
+                    {
+                        "in": "query",
+                        "name": "aggregate_by",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "container",
+                                "server"
+                            ],
+                            "default": "container"
+                        },
+                        "description": "Rank containers, or whole servers (all containers of a host)."
+                    },
+                    {
+                        "in": "query",
+                        "name": "top",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 100,
+                            "default": 10
+                        },
+                        "description": "Rows per list."
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The ranked lists and totals.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "backends": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/TopRealtimeStatsRow"
+                                                    }
+                                                },
+                                                "clients": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/TopRealtimeStatsRow"
+                                                    }
+                                                },
+                                                "totals": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "backends": {
+                                                            "$ref": "#/components/schemas/TopRealtimeStatsTotals"
+                                                        },
+                                                        "clients": {
+                                                            "$ref": "#/components/schemas/TopRealtimeStatsTotals"
+                                                        },
+                                                        "all": {
+                                                            "$ref": "#/components/schemas/TopRealtimeStatsTotals"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid `mode`, `sort_by`, `aggregate_by` or `top`."
+                    },
+                    "403": {
+                        "description": "The cluster does not serve tenant-scoped callers (older version)."
+                    },
+                    "405": {
+                        "description": "The cluster does not implement the method (older version)."
                     }
                 }
             }

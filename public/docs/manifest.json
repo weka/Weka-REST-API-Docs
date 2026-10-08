@@ -8,11 +8,11 @@
     "run_url": "https://github.com/weka/wekapp/actions/runs/31298559444"
   },
   "5.1": {
-    "ref": "REL/5.1.34",
-    "wekapp_sha": "cfbc60804cb627bcd3b7fde8e9c5e82f6f24c0be",
+    "ref": "REL/5.1.41",
+    "wekapp_sha": "cd616406b0f4de5b1307cd98db6e2cf6d25772e6",
     "swagger_jsdoc": "6.2.8",
-    "generated_at": "2026-09-24T07:27:50Z",
+    "generated_at": "2026-10-08T20:50:59Z",
     "published_by": "AriAttias",
-    "run_url": "https://github.com/weka/wekapp/actions/runs/35969701200"
+    "run_url": "https://github.com/weka/wekapp/actions/runs/37842454509"
   }
 }
