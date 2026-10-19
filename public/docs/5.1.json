@@ -11956,8 +11956,8 @@
                 "tags": [
                     "Filesystem"
                 ],
-                "summary": "List all filesystems",
-                "description": "Returns a list of all filesystems in the cluster.",
+                "summary": "List filesystems",
+                "description": "Lists the filesystems that belong to the caller's tenant, with their settings, capacity, and usage. Filesystems of other tenants are not included. While I/O is not started on the cluster, the usage fields, such as `used_total` and `free_total`, are `0`.",
                 "parameters": [
                     {
                         "in": "query",
@@ -11965,13 +11965,13 @@
                         "schema": {
                             "type": "boolean"
                         },
-                        "description": "Refresh the capacities to ensure they are current."
+                        "description": "When `true`, refreshes the usage values, such as `used_total` and `free_total`, before they are returned. Defaults to `false`."
                     }
                 ],
                 "operationId": "getFileSystems",
                 "responses": {
                     "200": {
-                        "description": "",
+                        "description": "An array with one object for each filesystem in the caller's tenant.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -11997,12 +11997,12 @@
                 "tags": [
                     "Filesystem"
                 ],
-                "summary": "Create filesystem",
-                "description": "Creates a new filesystem in the cluster.",
+                "summary": "Create a filesystem",
+                "description": "Creates a new filesystem in the cluster. Returns before the filesystem is ready, with `data.status` set to `CREATING`. Poll `GET /fileSystems/{uid}` until `status` is `READY`. There is no failure status. If the filesystem stays `CREATING`, check the cluster health with `weka status`. The `FilesystemCreated` event doesn't indicate completion.",
                 "operationId": "createFileSystem",
                 "responses": {
                     "200": {
-                        "description": "",
+                        "description": "The filesystem, with `status` set to `CREATING`.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -12037,119 +12037,119 @@
                                 "properties": {
                                     "name": {
                                         "type": "string",
-                                        "description": "Filesystem name.",
-                                        "example": "fs1"
+                                        "description": "Name of the filesystem. Cannot contain `/`.",
+                                        "example": "projects"
                                     },
                                     "group_name": {
                                         "type": "string",
                                         "example": "default",
-                                        "description": "Group name."
+                                        "description": "Name of the filesystem group that the filesystem belongs to."
                                     },
                                     "total_capacity": {
                                         "type": "integer",
                                         "format": "int64",
-                                        "example": 1073741824,
-                                        "description": "Total capacity (format - capacity in decimal or binary units - 11B, 1KB, 1MB, 1GB, 1TB, 1PB, 1EB, 1KiB, 1MiB, 1GiB, 1TiB, 1PiB, 1EiB)."
+                                        "example": 1099511627776,
+                                        "description": "Total capacity of the filesystem, in bytes."
                                     },
                                     "obs_name": {
                                         "type": "string",
-                                        "example": "OBS_1",
-                                        "description": "Object store name. Mandatory for tiered filesystems."
+                                        "example": "obs-bucket-1",
+                                        "description": "Name of the object store bucket to attach to the filesystem. Required for a tiered filesystem."
                                     },
                                     "ssd_capacity": {
                                         "type": "integer",
                                         "format": "int64",
-                                        "example": 1073741824,
-                                        "description": "SSD capacity. (format - Capacity in decimal or binary units - 11B, 1KB, 1MB, 1GB, 1TB, 1PB, 1EB, 1KiB, 1MiB, 1GiB, 1TiB, 1PiB, 1EiB)."
+                                        "example": 107374182400,
+                                        "description": "SSD capacity of a tiered filesystem, in bytes."
                                     },
                                     "thin_provision_min_ssd": {
                                         "type": "integer",
                                         "format": "int64",
-                                        "example": 1073741824,
-                                        "description": "Thin-provisioned minimum SSD capacity. (format - Capacity in decimal or binary units - 11B, 1KB, 1MB, 1GB, 1TB, 1PB, 1EB, 1KiB, 1MiB, 1GiB, 1TiB, 1PiB, 1EiB)."
+                                        "example": 107374182400,
+                                        "description": "Minimum SSD capacity of a thin-provisioned filesystem, in bytes."
                                     },
                                     "thin_provision_max_ssd": {
                                         "type": "integer",
                                         "format": "int64",
-                                        "example": 1073741824,
-                                        "description": "Thin-provisioned maximum SSD capacity. (format - Capacity in decimal or binary units - 11B, 1KB, 1MB, 1GB, 1TB, 1PB, 1EB, 1KiB, 1MiB, 1GiB, 1TiB, 1PiB, 1EiB)."
+                                        "example": 536870912000,
+                                        "description": "Maximum SSD capacity of a thin-provisioned filesystem, in bytes."
                                     },
                                     "encrypted": {
                                         "type": "boolean",
                                         "example": true,
-                                        "description": "Creates an encrypted filesystem."
+                                        "description": "When `true`, creates an encrypted filesystem. Defaults to `false`."
                                     },
                                     "auth_required": {
                                         "type": "boolean",
                                         "example": true,
-                                        "description": "Require the mounting user to be authenticated for mounting this filesystem. This flag is only effective in the root organization; users in non-root organizations must be authenticated to perform a mount operation."
+                                        "description": "When `true`, only an authenticated user can mount the filesystem. Defaults to `false`, except in a tenant that enforces filesystem authentication, where it defaults to `true` and cannot be set to `false`."
                                     },
                                     "allow_no_kms": {
                                         "type": "boolean",
-                                        "example": true,
-                                        "description": "Allow (insecurely) creating an encrypted filesystem without a KMS configured."
+                                        "example": false,
+                                        "description": "When `true`, an encrypted filesystem can be created while no KMS is configured. Defaults to `true`."
                                     },
                                     "kms_vault_key_identifier": {
                                         "type": "string",
                                         "example": "weka_fs_key1",
-                                        "description": "Key identifier for encrypting the filesystem key."
+                                        "description": "Identifier of the HashiCorp Vault key that encrypts the filesystem key. Required when any other `kms_vault_*` field is set. The `kms_vault_*` fields apply only to an encrypted filesystem, when the cluster KMS is HashiCorp Vault with role-based authentication."
                                     },
                                     "kms_vault_namespace": {
                                         "type": "string",
                                         "example": "namespace1",
-                                        "description": "Namespace in which the key is created."
+                                        "description": "HashiCorp Vault namespace that contains the key. Requires `kms_vault_role_id` and `kms_vault_secret_id`."
                                     },
                                     "kms_vault_role_id": {
                                         "type": "string",
                                         "example": "d4b9fcf3-8fae-4f2d-b9ae-4899aff66fe8",
-                                        "description": "Role Identifier with access to the specified key."
+                                        "description": "HashiCorp Vault role ID that has access to the key. Set it together with `kms_vault_secret_id`."
                                     },
                                     "kms_vault_secret_id": {
                                         "type": "string",
                                         "example": "b99052e6-8bf1-4f0a-a3d0-969f90698d28",
-                                        "description": "Secret identifier to access the key for the specified role."
+                                        "description": "HashiCorp Vault secret ID for the role in `kms_vault_role_id`. Set it together with `kms_vault_role_id`."
                                     },
                                     "data_reduction": {
                                         "type": "boolean",
                                         "example": true,
-                                        "description": "Enable data reduction."
+                                        "description": "When `true`, enables data reduction for the filesystem. Defaults to `false`."
                                     },
                                     "audit": {
                                         "type": "boolean",
                                         "example": true,
-                                        "description": "Enable audit logging."
+                                        "description": "When `true`, enables audit logging for the filesystem."
                                     },
                                     "audit_open_close": {
                                         "type": "boolean",
                                         "example": true,
-                                        "description": "Enable audit logging for Open/Close operation."
+                                        "description": "When `true`, audit logging also records open and close operations."
                                     },
                                     "index_enabled": {
                                         "type": "boolean",
                                         "example": true,
-                                        "description": "Enable catalog indexing for this filesystem."
+                                        "description": "When `true`, enables catalog indexing for the filesystem."
                                     },
                                     "has_permissions": {
                                         "type": "boolean",
                                         "example": false,
-                                        "description": "Enable filesystem mount permissions."
+                                        "description": "When `true`, only the filesystem owner and Tenant Admins can obtain a mount token for the filesystem. The user who creates the filesystem becomes its owner. Defaults to `false`."
                                     },
                                     "org": {
                                         "type": "string",
-                                        "example": "org1",
-                                        "description": "Tenant name or ID. Defaults to the current user's tenant."
+                                        "example": "tenant-a",
+                                        "description": "Name or ID of the tenant to create the filesystem in. Defaults to the caller's tenant. A Cluster Admin can name any tenant; other users can name only their own tenant."
                                     },
                                     "max_throughput": {
                                         "type": "integer",
                                         "format": "int64",
                                         "example": 1073741824,
-                                        "description": "Maximum throughput limit for the filesystem in bytes/sec. 0 means unlimited."
+                                        "description": "Maximum throughput of the filesystem, in bytes per second. `0` means no limit."
                                     },
                                     "max_iops": {
                                         "type": "integer",
                                         "format": "int64",
                                         "example": 10000,
-                                        "description": "Maximum IOPS limit for the filesystem. 0 means unlimited."
+                                        "description": "Maximum number of I/O operations per second for the filesystem. `0` means no limit."
                                     }
                                 }
                             }
@@ -12163,8 +12163,8 @@
                 "tags": [
                     "Filesystem"
                 ],
-                "summary": "Get filesystem details",
-                "description": "Returns detailed information about a specific filesystem, such as its size, quota, and usage.",
+                "summary": "Get a filesystem",
+                "description": "Returns one filesystem with its settings, capacity, usage, and attached object store buckets. The filesystem must belong to the caller's tenant; otherwise the response is `404`.",
                 "parameters": [
                     {
                         "in": "path",
@@ -12173,7 +12173,7 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "The unique identifier of the filesystem."
+                        "description": "UID of the filesystem, as returned in the `uid` field of `GET /fileSystems`."
                     },
                     {
                         "in": "query",
@@ -12181,13 +12181,13 @@
                         "schema": {
                             "type": "boolean"
                         },
-                        "description": "Refresh the capacities to ensure they are current."
+                        "description": "When `true`, refreshes the usage values, such as `used_total` and `free_total`, before they are returned. Defaults to `false`."
                     }
                 ],
                 "operationId": "getFileSystem",
                 "responses": {
                     "200": {
-                        "description": "",
+                        "description": "The filesystem.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -12214,7 +12214,7 @@
                     "Filesystem"
                 ],
                 "summary": "Update a filesystem",
-                "description": "Updates the settings of an existing filesystem.",
+                "description": "Updates the settings of a filesystem in the caller's tenant. Only the fields in the request body change; omitted fields keep their current values.",
                 "operationId": "updateFileSystem",
                 "parameters": [
                     {
@@ -12224,12 +12224,12 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "The unique identifier of the filesystem."
+                        "description": "UID of the filesystem, as returned in the `uid` field of `GET /fileSystems`."
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "",
+                        "description": "The filesystem with its updated settings.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -12259,99 +12259,99 @@
                                 "properties": {
                                     "new_name": {
                                         "type": "string",
-                                        "description": "New name.",
-                                        "example": "newFs"
+                                        "description": "New name for the filesystem. Must differ from the names of the other filesystems in the tenant.",
+                                        "example": "projects-archive"
                                     },
                                     "total_capacity": {
                                         "type": "integer",
                                         "format": "int64",
-                                        "example": 1073741824,
-                                        "description": "Total capacity. (format - Capacity in decimal or binary units - 11B, 1KB, 1MB, 1GB, 1TB, 1PB, 1EB, 1KiB, 1MiB, 1GiB, 1TiB, 1PiB, 1EiB)."
+                                        "example": 2199023255552,
+                                        "description": "New total capacity of the filesystem, in bytes. Must not be less than the capacity that the filesystem already uses."
                                     },
                                     "ssd_capacity": {
                                         "type": "integer",
                                         "format": "int64",
-                                        "example": 1073741824,
-                                        "description": "SSD capacity. (format - Capacity in decimal or binary units - 11B, 1KB, 1MB, 1GB, 1TB, 1PB, 1EB, 1KiB, 1MiB, 1GiB, 1TiB, 1PiB, 1EiB)."
+                                        "example": 214748364800,
+                                        "description": "New SSD capacity of the filesystem, in bytes. Applies only to a tiered filesystem. Cannot be combined with `thin_provision_min_ssd` or `thin_provision_max_ssd`."
                                     },
                                     "thin_provision_min_ssd": {
                                         "type": "integer",
                                         "format": "int64",
-                                        "example": 1073741824,
-                                        "description": "Thin-provisioned minimum SSD capacity. (format - Capacity in decimal or binary units - 11B, 1KB, 1MB, 1GB, 1TB, 1PB, 1EB, 1KiB, 1MiB, 1GiB, 1TiB, 1PiB, 1EiB)."
+                                        "example": 107374182400,
+                                        "description": "Minimum SSD capacity of the thin-provisioned filesystem, in bytes. Must not exceed `thin_provision_max_ssd`. To convert a filesystem that is not thin-provisioned, set both `thin_provision_min_ssd` and `thin_provision_max_ssd`."
                                     },
                                     "thin_provision_max_ssd": {
                                         "type": "integer",
                                         "format": "int64",
-                                        "example": 1073741824,
-                                        "description": "Thin-provisioned maximum SSD capacity. (format - Capacity in decimal or binary units - 11B, 1KB, 1MB, 1GB, 1TB, 1PB, 1EB, 1KiB, 1MiB, 1GiB, 1TiB, 1PiB, 1EiB)."
+                                        "example": 536870912000,
+                                        "description": "Maximum SSD capacity of the thin-provisioned filesystem, in bytes. Must not exceed the total capacity. For a filesystem that is not tiered, must equal the total capacity."
                                     },
                                     "auth_required": {
                                         "type": "boolean",
                                         "example": true,
-                                        "description": "Require the mounting user to be authenticated for mounting this filesystem. This flag is only effective in the root organization; users in non-root organizations must be authenticated to perform a mount operation."
+                                        "description": "When `true`, only an authenticated user can mount the filesystem. In a tenant that enforces filesystem authentication, it cannot be set to `false`. Setting it to `true` requires that the filesystem has no NFS or SMB shares, and revokes the outstanding mount tokens of the filesystem."
                                     },
                                     "audit": {
                                         "type": "boolean",
                                         "example": true,
-                                        "description": "Update audit status."
+                                        "description": "When `true`, enables audit logging for the filesystem; `false` disables it."
                                     },
                                     "audit_open_close": {
                                         "type": "boolean",
                                         "example": true,
-                                        "description": "Update audit status for Open/Close operations."
+                                        "description": "When `true`, audit logging also records open and close operations; `false` stops recording them."
                                     },
                                     "kms_vault_key_identifier": {
                                         "type": "string",
                                         "example": "weka_fs_key1",
-                                        "description": "Key identifier for encrypting the filesystem key."
+                                        "description": "Identifier of the HashiCorp Vault key that encrypts the filesystem key. The `kms_vault_*` fields apply only to an encrypted filesystem, when the KMS is HashiCorp Vault with role-based authentication. Changing them rewraps the filesystem key."
                                     },
                                     "kms_vault_namespace": {
                                         "type": "string",
                                         "example": "namespace1",
-                                        "description": "Namespace in which the key is created."
+                                        "description": "HashiCorp Vault namespace that contains the key. Requires `kms_vault_role_id` and `kms_vault_secret_id`."
                                     },
                                     "kms_vault_role_id": {
                                         "type": "string",
                                         "example": "d4b9fcf3-8fae-4f2d-b9ae-4899aff66fe8",
-                                        "description": "Role Identifier with access to the specified key."
+                                        "description": "HashiCorp Vault role ID that has access to the key. Set it together with `kms_vault_secret_id`."
                                     },
                                     "kms_vault_secret_id": {
                                         "type": "string",
                                         "example": "b99052e6-8bf1-4f0a-a3d0-969f90698d28",
-                                        "description": "Secret identifier to access the key for the specified role."
+                                        "description": "HashiCorp Vault secret ID for the role in `kms_vault_role_id`. Set it together with `kms_vault_role_id`."
                                     },
                                     "use_cluster_kms_conf": {
                                         "type": "boolean",
                                         "example": true,
-                                        "description": "Update the filesystem to use cluster KMS configuration."
+                                        "description": "When `true`, removes the KMS settings of the filesystem so that it uses the KMS configuration of its tenant, and rewraps the filesystem key. Defaults to `false`."
                                     },
                                     "index_enabled": {
                                         "type": "boolean",
                                         "example": true,
-                                        "description": "Enable catalog indexing for this filesystem."
+                                        "description": "When `true`, enables catalog indexing for the filesystem; `false` disables it. Indexing cannot be enabled on the filesystem that stores the catalog index."
                                     },
                                     "has_permissions": {
                                         "type": "boolean",
                                         "example": false,
-                                        "description": "Update the filesystem to use access permissions."
+                                        "description": "When `true`, only the filesystem owner and Tenant Admins can obtain a mount token for the filesystem. Only a Tenant Admin can change this field. Changing it to `true` revokes the outstanding mount tokens of the filesystem."
                                     },
                                     "owner": {
                                         "type": "string",
                                         "example": "9df5a0ff-3828-470e-9537-a12d54172526",
-                                        "description": "Update the filesystem owner to the given user UID."
+                                        "description": "UID of the user to set as the filesystem owner. Only a Tenant Admin can change this field. Changing the owner revokes the outstanding mount tokens of the filesystem."
                                     },
                                     "max_throughput": {
                                         "type": "integer",
                                         "format": "int64",
                                         "example": 1073741824,
-                                        "description": "Maximum throughput limit for the filesystem in bytes/sec. 0 means unlimited."
+                                        "description": "Maximum throughput of the filesystem, in bytes per second. `0` means no limit."
                                     },
                                     "max_iops": {
                                         "type": "integer",
                                         "format": "int64",
                                         "example": 10000,
-                                        "description": "Maximum IOPS limit for the filesystem. 0 means unlimited."
+                                        "description": "Maximum number of I/O operations per second for the filesystem. `0` means no limit."
                                     }
                                 }
                             }
@@ -12363,8 +12363,8 @@
                 "tags": [
                     "Filesystem"
                 ],
-                "summary": "Remove a filesystem",
-                "description": "Removes a specified filesystem and its data from the cluster.",
+                "summary": "Delete a filesystem",
+                "description": "Deletes a filesystem in the caller's tenant, including its data, from the cluster.",
                 "operationId": "deleteFileSystem",
                 "responses": {
                     "200": {
@@ -12385,7 +12385,7 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "The unique identifier of the filesystem."
+                        "description": "UID of the filesystem, as returned in the `uid` field of `GET /fileSystems`."
                     },
                     {
                         "in": "query",
@@ -12404,7 +12404,7 @@
                     "Filesystem"
                 ],
                 "summary": "Get QoS limits for a filesystem",
-                "description": "Returns the current throughput and IOPS limits for a specific filesystem.",
+                "description": "Returns the throughput and IOPS limits of a filesystem. A value of `0` means that no limit is set.",
                 "operationId": "getFileSystemQos",
                 "parameters": [
                     {
@@ -12414,12 +12414,12 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "The unique identifier of the filesystem."
+                        "description": "UID of the filesystem, as returned in the `uid` field of `GET /fileSystems`."
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "The QoS limits were successfully retrieved.",
+                        "description": "The QoS limits of the filesystem.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -12430,11 +12430,11 @@
                                             "properties": {
                                                 "max_throughput": {
                                                     "type": "number",
-                                                    "description": "Maximum throughput in bytes/sec, 0 = unlimited."
+                                                    "description": "Maximum throughput of the filesystem, in bytes per second. `0` means no limit."
                                                 },
                                                 "max_iops": {
                                                     "type": "number",
-                                                    "description": "Maximum IOPS (ops/sec), 0 = unlimited."
+                                                    "description": "Maximum number of I/O operations per second for the filesystem. `0` means no limit."
                                                 }
                                             }
                                         }
@@ -12455,8 +12455,8 @@
                 "tags": [
                     "Filesystem"
                 ],
-                "summary": "Set QoS limits for a filesystem",
-                "description": "Sets throughput and IOPS limits for a specific filesystem. Pass 0 to remove a limit.",
+                "summary": "Update QoS limits for a filesystem",
+                "description": "Sets the throughput and IOPS limits of a filesystem. A limit that is omitted from the request body keeps its current value. Set a limit to `0` to remove it.",
                 "operationId": "setFileSystemQos",
                 "parameters": [
                     {
@@ -12466,7 +12466,7 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "The unique identifier of the filesystem."
+                        "description": "UID of the filesystem, as returned in the `uid` field of `GET /fileSystems`."
                     }
                 ],
                 "requestBody": {
@@ -12477,11 +12477,13 @@
                                 "properties": {
                                     "max_throughput": {
                                         "type": "number",
-                                        "description": "Maximum throughput in bytes/sec, 0 = unlimited."
+                                        "description": "Maximum throughput of the filesystem, in bytes per second. `0` means no limit.",
+                                        "example": 1073741824
                                     },
                                     "max_iops": {
                                         "type": "number",
-                                        "description": "Maximum IOPS (ops/sec), 0 = unlimited."
+                                        "description": "Maximum number of I/O operations per second for the filesystem. `0` means no limit.",
+                                        "example": 10000
                                     }
                                 }
                             }
@@ -12490,7 +12492,7 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "The QoS limits were updated successfully.",
+                        "description": "The filesystem, with the new limits in `max_throughput` and `max_iops`.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -12519,8 +12521,8 @@
                 "tags": [
                     "Filesystem"
                 ],
-                "summary": "Reset QoS limits for a filesystem to unlimited",
-                "description": "Removes all QoS limits for a specific filesystem.",
+                "summary": "Delete QoS limits for a filesystem",
+                "description": "Removes the throughput and IOPS limits of a filesystem by setting both to `0`.",
                 "operationId": "resetFileSystemQos",
                 "parameters": [
                     {
@@ -12530,12 +12532,12 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "The unique identifier of the filesystem."
+                        "description": "UID of the filesystem, as returned in the `uid` field of `GET /fileSystems`."
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "The QoS limits were reset successfully.",
+                        "description": "The filesystem, with `max_throughput` and `max_iops` set to `0`.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -12563,8 +12565,8 @@
                 "tags": [
                     "Filesystem"
                 ],
-                "summary": "Obtain mount token for filesystem",
-                "description": "Generates a long-lived authentication token to mount a specific filesystem. This token enables persistent access and supports controlled permissions, such as read-only access or defined expiration periods.",
+                "summary": "Create a mount token for a filesystem",
+                "description": "Creates a token that authenticates a mount of the filesystem. The token can be limited to read-only mounts and can carry an expiration time. When the filesystem has `has_permissions` enabled, only its owner or a Tenant Admin can create a token. When the filesystem has `auth_required` enabled, the token lifetime cannot exceed the mount token timeout configured for the cluster.",
                 "operationId": "getMountToken",
                 "responses": {
                     "200": {
@@ -12591,7 +12593,7 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "Filesystem uid"
+                        "description": "UID of the filesystem, as returned in the `uid` field of `GET /fileSystems`."
                     }
                 ],
                 "requestBody": {
@@ -12603,12 +12605,13 @@
                                 "properties": {
                                     "read_only": {
                                         "type": "boolean",
-                                        "description": "Mount token can only be used for read-only mounts",
+                                        "description": "When `true`, the token can be used only for read-only mounts. Defaults to `false`.",
                                         "example": true
                                     },
                                     "expires": {
                                         "type": "number",
-                                        "description": "Expiration time in seconds for the token"
+                                        "description": "Lifetime of the token, in seconds. If omitted, the default mount token lifetime of the cluster applies. A lifetime that exceeds the permitted maximum returns `403`.",
+                                        "example": 86400
                                     }
                                 }
                             }
@@ -12623,8 +12626,8 @@
                 "tags": [
                     "Filesystem"
                 ],
-                "summary": "Attach an object store bucket (Deprecated)",
-                "description": "This endpoint is deprecated. Use POST /fileSystems/{uid}/objectStoreBuckets instead.",
+                "summary": "Attach an object store bucket",
+                "description": "Deprecated. Use `POST /fileSystems/{uid}/objectStoreBuckets`. Attaches an object store bucket to a filesystem in the caller's tenant.",
                 "operationId": "attachObsToFs",
                 "responses": {
                     "200": {
@@ -12648,7 +12651,7 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "Filesystem UID."
+                        "description": "UID of the filesystem, as returned in the `uid` field of `GET /fileSystems`."
                     }
                 ],
                 "requestBody": {
@@ -12663,12 +12666,12 @@
                                 "properties": {
                                     "obs_name": {
                                         "type": "string",
-                                        "description": "Name of the Object Store Bucket to attach.",
-                                        "example": "obs1"
+                                        "description": "Name of the object store bucket to attach.",
+                                        "example": "obs-bucket-1"
                                     },
                                     "obs_mode": {
                                         "type": "string",
-                                        "description": "The operation mode for the OBS.",
+                                        "description": "Mode in which the filesystem uses the attached bucket.",
                                         "enum": [
                                             "READ_ONLY",
                                             "WRITABLE"
@@ -12687,7 +12690,7 @@
                     "Filesystem"
                 ],
                 "summary": "Attach an object store bucket",
-                "description": "Links an object store bucket to a filesystem, allowing tiered data access.",
+                "description": "Attaches an object store bucket to a filesystem in the caller's tenant.",
                 "operationId": "attachObsBucketToFs",
                 "responses": {
                     "200": {
@@ -12711,7 +12714,7 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "The unique identifier of the filesystem."
+                        "description": "UID of the filesystem, as returned in the `uid` field of `GET /fileSystems`."
                     }
                 ],
                 "requestBody": {
@@ -12726,12 +12729,12 @@
                                 "properties": {
                                     "obs_name": {
                                         "type": "string",
-                                        "description": "Name of the Object Store Bucket to attach.",
-                                        "example": "obs1"
+                                        "description": "Name of the object store bucket to attach.",
+                                        "example": "obs-bucket-1"
                                     },
                                     "obs_mode": {
                                         "type": "string",
-                                        "description": "The operation mode for the OBS.",
+                                        "description": "Mode in which the filesystem uses the attached bucket.",
                                         "enum": [
                                             "READ_ONLY",
                                             "WRITABLE"
@@ -12750,12 +12753,12 @@
                 "tags": [
                     "Filesystem"
                 ],
-                "summary": "Detach an object store bucket (Deprecated)",
-                "description": "This endpoint is deprecated. Use DELETE /fileSystems/{uid}/objectStoreBuckets/{obs_uid} instead.",
+                "summary": "Detach an object store bucket",
+                "description": "Deprecated. Use `DELETE /fileSystems/{uid}/objectStoreBuckets/{obs_uid}`. Starts detaching an object store bucket from a filesystem in the caller's tenant, as a background task.",
                 "operationId": "detachObsFromFS",
                 "responses": {
                     "200": {
-                        "description": "",
+                        "description": "The detach task was started. `data` contains the task ID.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -12764,7 +12767,7 @@
                                         "data": {
                                             "type": "string",
                                             "example": "CWTaskId<278>",
-                                            "description": "Detach task ID."
+                                            "description": "ID of the background task that detaches the bucket."
                                         }
                                     }
                                 }
@@ -12789,7 +12792,7 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "Filesystem UID."
+                        "description": "UID of the filesystem, as returned in the `uid` field of `GET /fileSystems`."
                     },
                     {
                         "in": "path",
@@ -12798,7 +12801,7 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "Object store system UID."
+                        "description": "UID of the object store bucket to detach."
                     }
                 ]
             }
@@ -12809,11 +12812,11 @@
                     "Quota"
                 ],
                 "summary": "List directory quotas",
-                "description": "Returns all quotas for directories within a specific filesystem.",
+                "description": "Lists the directory quotas of a filesystem in the caller's tenant, one page at a time. To get the next page, pass the returned `next_token` in the next request. The filesystem must be ready.",
                 "operationId": "listQuotas",
                 "responses": {
                     "200": {
-                        "description": "",
+                        "description": "One page of directory quotas, and the token for the next page.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -12826,55 +12829,67 @@
                                                 "properties": {
                                                     "quota_id": {
                                                         "type": "string",
-                                                        "example": "0x3558c7ffd0770000:0"
+                                                        "description": "ID of the quota.",
+                                                        "example": "DIR:0x00000921c0000040:0"
                                                     },
                                                     "inode_id": {
                                                         "type": "number",
+                                                        "description": "Inode ID of the directory. Use it as `inode_id` in the other directory quota operations.",
                                                         "example": 10092623495168
                                                     },
                                                     "full_path": {
                                                         "type": "string",
-                                                        "example": "default:/testdir/dir8"
+                                                        "description": "Filesystem name and directory path, in the form `<filesystem>:<path>`.",
+                                                        "example": "projects:/research/genomics"
                                                     },
                                                     "total_bytes": {
                                                         "type": "integer",
                                                         "format": "int64",
+                                                        "description": "Capacity used under the directory, data and metadata combined, in bytes.",
                                                         "example": 8192
                                                     },
                                                     "time_over_soft_limit": {
                                                         "type": "number",
+                                                        "description": "Time that usage has been over the soft limit, in seconds.",
                                                         "example": 100
                                                     },
                                                     "owner": {
                                                         "type": "string",
-                                                        "example": "user"
+                                                        "description": "Owner name recorded for the quota.",
+                                                        "example": "research-team"
                                                     },
                                                     "data_blocks": {
                                                         "type": "number",
+                                                        "description": "Number of data blocks used in the directory.",
                                                         "example": 0
                                                     },
                                                     "grace_seconds": {
                                                         "type": "number",
+                                                        "description": "Grace period after usage exceeds the soft limit, in seconds. `null` means the grace period is unlimited.",
                                                         "example": null
                                                     },
                                                     "hard_limit_bytes": {
                                                         "type": "integer",
                                                         "format": "int64",
+                                                        "description": "Hard limit, in bytes. `null` means no hard limit.",
                                                         "example": 1000001536
                                                     },
                                                     "path": {
                                                         "type": "string",
-                                                        "example": "/testdir/dir8"
+                                                        "description": "Path of the directory within the filesystem.",
+                                                        "example": "/research/genomics"
                                                     },
                                                     "fsName": {
                                                         "type": "string",
-                                                        "example": "default"
+                                                        "description": "Name of the filesystem.",
+                                                        "example": "projects"
                                                     }
                                                 }
                                             }
                                         },
                                         "next_token": {
                                             "type": "number",
+                                            "description": "Token for the next page. `null` when this is the last page.",
                                             "example": 3214121
                                         }
                                     }
@@ -12891,7 +12906,7 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "The unique identifier of the filesystem."
+                        "description": "UID of the filesystem, as returned in the `uid` field of `GET /fileSystems`."
                     },
                     {
                         "in": "query",
@@ -12899,7 +12914,7 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "Token to get the next page."
+                        "description": "The `next_token` value from the previous response. Omit it to get the first page."
                     }
                 ]
             }
@@ -12910,11 +12925,11 @@
                     "Quota"
                 ],
                 "summary": "List default directory quotas",
-                "description": "Returns all default quotas for directories within a specific filesystem.",
+                "description": "Lists the directories of a filesystem in the caller's tenant that have a default quota, with the default quota settings of each.",
                 "operationId": "listDefaultQuotas",
                 "responses": {
                     "200": {
-                        "description": "",
+                        "description": "An array with one object for each directory that has a default quota.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -12927,36 +12942,44 @@
                                                 "properties": {
                                                     "id": {
                                                         "type": "string",
+                                                        "description": "Inode ID of the directory.",
                                                         "example": "48117142192129"
                                                     },
                                                     "fsName": {
                                                         "type": "string",
-                                                        "example": "default"
+                                                        "description": "Name of the filesystem.",
+                                                        "example": "projects"
                                                     },
                                                     "graceSeconds": {
                                                         "type": "number",
-                                                        "example": 8192
+                                                        "description": "Default grace period after usage exceeds the soft limit, in seconds. `null` means the grace period is unlimited.",
+                                                        "example": 86400
                                                     },
                                                     "hard_limit_bytes": {
                                                         "type": "integer",
                                                         "format": "int64",
+                                                        "description": "Default hard limit, in bytes. `null` means no hard limit.",
                                                         "example": 18446744073
                                                     },
                                                     "owner": {
                                                         "type": "string",
-                                                        "example": "admin"
+                                                        "description": "Default owner name for the quotas.",
+                                                        "example": "research-team"
                                                     },
                                                     "path": {
                                                         "type": "string",
-                                                        "example": "/dir1"
+                                                        "description": "Path of the directory within the filesystem.",
+                                                        "example": "/research"
                                                     },
                                                     "snapName": {
                                                         "type": "string",
-                                                        "example": "string"
+                                                        "description": "Name of the snapshot that contains the directory. Empty for the live filesystem.",
+                                                        "example": ""
                                                     },
                                                     "soft_limit_bytes": {
                                                         "type": "integer",
                                                         "format": "int64",
+                                                        "description": "Default soft limit, in bytes. `null` means no soft limit.",
                                                         "example": 18446744073
                                                     }
                                                 }
@@ -12976,7 +12999,7 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "The unique identifier of the filesystem."
+                        "description": "UID of the filesystem, as returned in the `uid` field of `GET /fileSystems`."
                     }
                 ]
             }
@@ -12986,12 +13009,12 @@
                 "tags": [
                     "Quota"
                 ],
-                "summary": "Get directory quota details",
-                "description": "Returns the quota parameters for a specific directory.",
+                "summary": "Get a directory quota",
+                "description": "Returns the quota settings and usage of a directory. The directory is identified by `inode_id`. A directory that has no quota returns an error.",
                 "operationId": "getQuota",
                 "responses": {
                     "200": {
-                        "description": "",
+                        "description": "The quota of the directory.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -13002,6 +13025,7 @@
                                             "properties": {
                                                 "inode_id": {
                                                     "type": "number",
+                                                    "description": "Inode ID of the directory.",
                                                     "example": 10092623495168
                                                 },
                                                 "total_bytes": {
@@ -13011,7 +13035,8 @@
                                                 },
                                                 "owner": {
                                                     "type": "string",
-                                                    "example": "user"
+                                                    "description": "Owner name recorded for the quota.",
+                                                    "example": "research-team"
                                                 },
                                                 "data_blocks": {
                                                     "type": "number",
@@ -13019,19 +13044,23 @@
                                                 },
                                                 "time_over_soft_limit": {
                                                     "type": "number",
+                                                    "description": "Time that usage has been over the soft limit, in seconds.",
                                                     "example": 100
                                                 },
                                                 "grace_seconds": {
                                                     "type": "number",
+                                                    "description": "Grace period after usage exceeds the soft limit, in seconds. `null` means the grace period is unlimited.",
                                                     "example": null
                                                 },
                                                 "hard_limit_bytes": {
                                                     "type": "integer",
                                                     "format": "int64",
+                                                    "description": "Hard limit, in bytes. `null` means no hard limit.",
                                                     "example": 1000001536
                                                 },
                                                 "snap_view_id": {
                                                     "type": "number",
+                                                    "description": "ID of the view of the filesystem (the live filesystem or a snapshot) that contains the directory.",
                                                     "example": 0
                                                 },
                                                 "metadata_blocks": {
@@ -13041,10 +13070,12 @@
                                                 "soft_limit_bytes": {
                                                     "type": "integer",
                                                     "format": "int64",
+                                                    "description": "Soft limit, in bytes. `null` means no soft limit.",
                                                     "example": null
                                                 },
                                                 "status": {
                                                     "type": "string",
+                                                    "description": "State of the quota, for example `ACTIVE`.",
                                                     "example": "ACTIVE"
                                                 }
                                             }
@@ -13063,7 +13094,7 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "The unique identifier of the filesystem."
+                        "description": "UID of the filesystem, as returned in the `uid` field of `GET /fileSystems`."
                     },
                     {
                         "in": "path",
@@ -13072,7 +13103,7 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "The unique identifier of the directory's inode."
+                        "description": "Inode ID of the directory, as returned in the `inode_id` field of `GET /fileSystems/{uid}/resolvePath`."
                     }
                 ]
             },
@@ -13080,12 +13111,12 @@
                 "tags": [
                     "Quota"
                 ],
-                "summary": "Set a quota for a directory",
-                "description": "Sets a quota for a directory. If Data Service is not enabled, use the CLI to set a quota for a non-empty directory.",
+                "summary": "Set a directory quota",
+                "description": "Sets the quota of a directory, which is identified by `inode_id`. When the cluster uses Data Service for the operation, a background task applies the quota to the existing contents of the directory, and `cw_task_id` contains the ID of that task. Otherwise, the directory must be empty; to set a quota on a directory that has contents, enable Data Service or use the CLI.",
                 "operationId": "putQuota",
                 "responses": {
                     "200": {
-                        "description": "",
+                        "description": "The quota as set on the directory.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -13096,6 +13127,7 @@
                                             "properties": {
                                                 "inode_id": {
                                                     "type": "number",
+                                                    "description": "Inode ID of the directory.",
                                                     "example": 10092623495168
                                                 },
                                                 "total_bytes": {
@@ -13105,7 +13137,8 @@
                                                 },
                                                 "owner": {
                                                     "type": "string",
-                                                    "example": "user"
+                                                    "description": "Owner name recorded for the quota.",
+                                                    "example": "research-team"
                                                 },
                                                 "data_blocks": {
                                                     "type": "number",
@@ -13113,11 +13146,13 @@
                                                 },
                                                 "grace_seconds": {
                                                     "type": "number",
+                                                    "description": "Grace period after usage exceeds the soft limit, in seconds. `null` means the grace period is unlimited.",
                                                     "example": null
                                                 },
                                                 "hard_limit_bytes": {
                                                     "type": "integer",
                                                     "format": "int64",
+                                                    "description": "Hard limit, in bytes. `null` means no hard limit.",
                                                     "example": 1000001536
                                                 },
                                                 "time_over_soft_limit": {
@@ -13126,6 +13161,7 @@
                                                 },
                                                 "snap_view_id": {
                                                     "type": "number",
+                                                    "description": "ID of the view of the filesystem (the live filesystem or a snapshot) that contains the directory.",
                                                     "example": 0
                                                 },
                                                 "metadata_blocks": {
@@ -13135,14 +13171,17 @@
                                                 "soft_limit_bytes": {
                                                     "type": "integer",
                                                     "format": "int64",
+                                                    "description": "Soft limit, in bytes. `null` means no soft limit.",
                                                     "example": 0
                                                 },
                                                 "status": {
                                                     "type": "string",
+                                                    "description": "State of the quota. `ADDING` in this response.",
                                                     "example": "ACTIVE"
                                                 },
                                                 "cw_task_id": {
                                                     "type": "number",
+                                                    "description": "ID of the background task that applies the quota to the existing contents of the directory, when the cluster uses Data Service for the operation.",
                                                     "example": 1
                                                 }
                                             }
@@ -13161,7 +13200,7 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "Filesystem UID."
+                        "description": "UID of the filesystem, as returned in the `uid` field of `GET /fileSystems`."
                     },
                     {
                         "in": "path",
@@ -13170,14 +13209,15 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "Directory's inode ID."
+                        "description": "Inode ID of the directory, as returned in the `inode_id` field of `GET /fileSystems/{uid}/resolvePath`."
                     },
                     {
                         "in": "query",
                         "name": "path",
                         "schema": {
                             "type": "string"
-                        }
+                        },
+                        "description": "Path of the directory within the filesystem. It appears in the event that records the change; the directory itself is identified by `inode_id`."
                     },
                     {
                         "in": "query",
@@ -13187,7 +13227,7 @@
                             "type": "integer",
                             "format": "int64"
                         },
-                        "description": "0 for unlimited."
+                        "description": "Hard limit, in bytes. `0` means no hard limit."
                     },
                     {
                         "in": "query",
@@ -13197,7 +13237,7 @@
                             "type": "integer",
                             "format": "int64"
                         },
-                        "description": "0 for unlimited."
+                        "description": "Soft limit, in bytes. `0` means no soft limit. Must not exceed the hard limit unless either limit is `0`."
                     },
                     {
                         "in": "query",
@@ -13205,14 +13245,16 @@
                         "required": true,
                         "schema": {
                             "type": "number"
-                        }
+                        },
+                        "description": "Grace period after usage exceeds the soft limit, in seconds. `0` or a negative value means an unlimited grace period."
                     },
                     {
                         "in": "query",
                         "name": "owner",
                         "schema": {
                             "type": "string"
-                        }
+                        },
+                        "description": "Owner name to record for the quota."
                     }
                 ]
             },
@@ -13220,12 +13262,12 @@
                 "tags": [
                     "Quota"
                 ],
-                "summary": "Update directory quota",
-                "description": "Modifies specific settings, such as the grace period or limits, for an existing directory quota.",
+                "summary": "Update a directory quota",
+                "description": "Changes settings of the existing quota of a directory, which is identified by `inode_id`. Only the settings passed in the request change. The directory must already have a quota.",
                 "operationId": "patchQuota",
                 "responses": {
                     "200": {
-                        "description": "",
+                        "description": "The quota with its updated settings.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -13236,6 +13278,7 @@
                                             "properties": {
                                                 "inode_id": {
                                                     "type": "number",
+                                                    "description": "Inode ID of the directory.",
                                                     "example": 10092623495168
                                                 },
                                                 "total_bytes": {
@@ -13245,7 +13288,8 @@
                                                 },
                                                 "owner": {
                                                     "type": "string",
-                                                    "example": "user"
+                                                    "description": "Owner name recorded for the quota.",
+                                                    "example": "research-team"
                                                 },
                                                 "data_blocks": {
                                                     "type": "number",
@@ -13253,15 +13297,18 @@
                                                 },
                                                 "grace_seconds": {
                                                     "type": "number",
+                                                    "description": "Grace period after usage exceeds the soft limit, in seconds. `null` means the grace period is unlimited.",
                                                     "example": null
                                                 },
                                                 "hard_limit_bytes": {
                                                     "type": "integer",
                                                     "format": "int64",
+                                                    "description": "Hard limit, in bytes. `null` means no hard limit.",
                                                     "example": 1000001536
                                                 },
                                                 "snap_view_id": {
                                                     "type": "number",
+                                                    "description": "ID of the view of the filesystem (the live filesystem or a snapshot) that contains the directory.",
                                                     "example": 0
                                                 },
                                                 "metadata_blocks": {
@@ -13271,10 +13318,12 @@
                                                 "soft_limit_bytes": {
                                                     "type": "integer",
                                                     "format": "int64",
+                                                    "description": "Soft limit, in bytes. `null` means no soft limit.",
                                                     "example": null
                                                 },
                                                 "status": {
                                                     "type": "string",
+                                                    "description": "State of the quota, for example `ACTIVE`.",
                                                     "example": "ACTIVE"
                                                 }
                                             }
@@ -13293,7 +13342,7 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "Filesystem UID."
+                        "description": "UID of the filesystem, as returned in the `uid` field of `GET /fileSystems`."
                     },
                     {
                         "in": "path",
@@ -13302,14 +13351,15 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "Directory's inode ID."
+                        "description": "Inode ID of the directory, as returned in the `inode_id` field of `GET /fileSystems/{uid}/resolvePath`."
                     },
                     {
                         "in": "query",
                         "name": "path",
                         "schema": {
                             "type": "string"
-                        }
+                        },
+                        "description": "Path of the directory within the filesystem. It appears in the event that records the change; the directory itself is identified by `inode_id`."
                     },
                     {
                         "in": "query",
@@ -13318,7 +13368,7 @@
                             "type": "integer",
                             "format": "int64"
                         },
-                        "description": "0 for unlimited."
+                        "description": "Hard limit, in bytes. `0` means no hard limit."
                     },
                     {
                         "in": "query",
@@ -13327,21 +13377,23 @@
                             "type": "integer",
                             "format": "int64"
                         },
-                        "description": "0 for unlimited."
+                        "description": "Soft limit, in bytes. `0` means no soft limit. Must not exceed the hard limit unless either limit is `0`."
                     },
                     {
                         "in": "query",
                         "name": "grace_seconds",
                         "schema": {
                             "type": "number"
-                        }
+                        },
+                        "description": "Grace period after usage exceeds the soft limit, in seconds. `0` or a negative value means an unlimited grace period."
                     },
                     {
                         "in": "query",
                         "name": "owner",
                         "schema": {
                             "type": "string"
-                        }
+                        },
+                        "description": "Owner name to record for the quota."
                     }
                 ]
             },
@@ -13349,12 +13401,12 @@
                 "tags": [
                     "Quota"
                 ],
-                "summary": "Remove directory quota",
-                "description": "Removes a quota from a specific directory. If the Data Service is not enabled, use the CLI to remove a quota from a non-empty directory.",
+                "summary": "Delete a directory quota",
+                "description": "Removes the quota of a directory, which is identified by `inode_id`. When the cluster uses Data Service for the operation, a background task removes the quota from the existing contents of the directory, and `cw_task_id` contains the ID of that task. Otherwise, the directory must be empty; to remove a quota from a directory that has contents, enable Data Service or use the CLI.",
                 "operationId": "deleteQuota",
                 "responses": {
                     "200": {
-                        "description": "",
+                        "description": "The settings of the removed quota.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -13365,6 +13417,7 @@
                                             "properties": {
                                                 "inode_id": {
                                                     "type": "number",
+                                                    "description": "Inode ID of the directory.",
                                                     "example": 10092623495168
                                                 },
                                                 "total_bytes": {
@@ -13374,7 +13427,8 @@
                                                 },
                                                 "owner": {
                                                     "type": "string",
-                                                    "example": "user"
+                                                    "description": "Owner name recorded for the quota.",
+                                                    "example": "research-team"
                                                 },
                                                 "data_blocks": {
                                                     "type": "number",
@@ -13382,15 +13436,18 @@
                                                 },
                                                 "grace_seconds": {
                                                     "type": "number",
+                                                    "description": "Grace period after usage exceeds the soft limit, in seconds. `null` means the grace period is unlimited.",
                                                     "example": null
                                                 },
                                                 "hard_limit_bytes": {
                                                     "type": "integer",
                                                     "format": "int64",
+                                                    "description": "Hard limit, in bytes. `null` means no hard limit.",
                                                     "example": 1000001536
                                                 },
                                                 "snap_view_id": {
                                                     "type": "number",
+                                                    "description": "ID of the view of the filesystem (the live filesystem or a snapshot) that contains the directory.",
                                                     "example": 0
                                                 },
                                                 "metadata_blocks": {
@@ -13400,14 +13457,17 @@
                                                 "soft_limit_bytes": {
                                                     "type": "integer",
                                                     "format": "int64",
+                                                    "description": "Soft limit, in bytes. `null` means no soft limit.",
                                                     "example": null
                                                 },
                                                 "status": {
                                                     "type": "string",
+                                                    "description": "State of the quota. `REMOVING` in this response.",
                                                     "example": "ACTIVE"
                                                 },
                                                 "cw_task_id": {
                                                     "type": "number",
+                                                    "description": "ID of the background task that removes the quota from the existing contents of the directory, when the cluster uses Data Service for the operation.",
                                                     "example": 1
                                                 }
                                             }
@@ -13426,7 +13486,7 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "Filesystem UID."
+                        "description": "UID of the filesystem, as returned in the `uid` field of `GET /fileSystems`."
                     },
                     {
                         "in": "path",
@@ -13435,14 +13495,15 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "Directory's inode ID."
+                        "description": "Inode ID of the directory, as returned in the `inode_id` field of `GET /fileSystems/{uid}/resolvePath`."
                     },
                     {
                         "in": "query",
                         "name": "path",
                         "schema": {
                             "type": "string"
-                        }
+                        },
+                        "description": "Path of the directory within the filesystem."
                     }
                 ]
             }
@@ -13452,8 +13513,8 @@
                 "tags": [
                     "Filesystem"
                 ],
-                "summary": "Get path by inode ID",
-                "description": "Returns the full path of a file or directory using its inode ID.",
+                "summary": "Get the path of an inode",
+                "description": "Returns the filesystem, snapshot, and path of the file or directory that has the given inode ID.",
                 "parameters": [
                     {
                         "in": "path",
@@ -13462,13 +13523,13 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "The unique identifier of the inode."
+                        "description": "Inode ID of the file or directory."
                     }
                 ],
                 "operationId": "filesystemResolveInode",
                 "responses": {
                     "200": {
-                        "description": "",
+                        "description": "The filesystem, snapshot, and path of the inode.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -13497,8 +13558,8 @@
                 "tags": [
                     "Filesystem"
                 ],
-                "summary": "Get filesystem by inode ID (Deprecated)",
-                "description": "This endpoint is deprecated. Use GET /fileSystems/{inode_id}/getPath instead.",
+                "summary": "Get filesystem by inode ID",
+                "description": "Deprecated. Use `GET /fileSystems/{inode_id}/getPath`. Returns the filesystem, snapshot, and path of the file or directory that has the given inode ID.",
                 "parameters": [
                     {
                         "in": "path",
@@ -13507,13 +13568,13 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "The unique identifier of the inode."
+                        "description": "Inode ID of the file or directory."
                     }
                 ],
                 "operationId": "filesystemResolveInodeDeprecated",
                 "responses": {
                     "200": {
-                        "description": "",
+                        "description": "The filesystem, snapshot, and path of the inode.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -13541,12 +13602,12 @@
                 "tags": [
                     "Quota"
                 ],
-                "summary": "Set or update a default directory quota",
-                "description": "Establishes or changes the default quota that applies to all newly created subdirectories within a specified parent directory.",
+                "summary": "Set a default directory quota",
+                "description": "Sets the default quota of a directory, which is identified by `inode_id`. The default quota applies to new subdirectories created in the directory. Only the settings passed in the request change.",
                 "operationId": "putDefaultQuota",
                 "responses": {
                     "200": {
-                        "description": "",
+                        "description": "The default quota is set. `data` is `null`.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -13614,14 +13675,15 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "Directory's inode ID."
+                        "description": "Inode ID of the directory, as returned in the `inode_id` field of `GET /fileSystems/{uid}/resolvePath`."
                     },
                     {
                         "in": "query",
                         "name": "path",
                         "schema": {
                             "type": "string"
-                        }
+                        },
+                        "description": "Path of the directory within the filesystem. It appears in the event that records the change; the directory itself is identified by `inode_id`."
                     },
                     {
                         "in": "query",
@@ -13630,7 +13692,7 @@
                             "type": "integer",
                             "format": "int64"
                         },
-                        "description": "0 for unlimited."
+                        "description": "Default hard limit, in bytes. `0` means no hard limit."
                     },
                     {
                         "in": "query",
@@ -13639,21 +13701,23 @@
                             "type": "integer",
                             "format": "int64"
                         },
-                        "description": "0 for unlimited."
+                        "description": "Default soft limit, in bytes. `0` means no soft limit. Must not exceed the default hard limit unless either limit is `0`."
                     },
                     {
                         "in": "query",
                         "name": "grace_seconds",
                         "schema": {
                             "type": "number"
-                        }
+                        },
+                        "description": "Default grace period after usage exceeds the soft limit, in seconds. `0` or a negative value means an unlimited grace period."
                     },
                     {
                         "in": "query",
                         "name": "owner",
                         "schema": {
                             "type": "string"
-                        }
+                        },
+                        "description": "Owner name of the default quota."
                     }
                 ]
             }
@@ -13663,12 +13727,12 @@
                 "tags": [
                     "Quota"
                 ],
-                "summary": "Remove default quota from a directory",
-                "description": "Removes the default quota from a directory, preventing new subdirectories from inheriting its settings.",
+                "summary": "Delete a default directory quota",
+                "description": "Removes the default quota of a directory, which is identified by `inode_id`. New subdirectories created in the directory no longer get a quota from it.",
                 "operationId": "deleteDefaultQuota",
                 "responses": {
                     "200": {
-                        "description": "",
+                        "description": "The default quota is removed. `data` is `null`.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -13679,11 +13743,11 @@
                                             "properties": {
                                                 "fsName": {
                                                     "type": "string",
-                                                    "example": "user"
+                                                    "example": "projects"
                                                 },
                                                 "path": {
                                                     "type": "string",
-                                                    "example": "default"
+                                                    "example": "/research"
                                                 },
                                                 "graceSeconds": {
                                                     "type": "number",
@@ -13723,14 +13787,15 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "Directory's inode ID."
+                        "description": "Inode ID of the directory, as returned in the `inode_id` field of `GET /fileSystems/{uid}/resolvePath`."
                     },
                     {
                         "in": "query",
                         "name": "path",
                         "schema": {
                             "type": "string"
-                        }
+                        },
+                        "description": "Path of the directory within the filesystem."
                     }
                 ]
             }
@@ -13741,11 +13806,11 @@
                     "Quota"
                 ],
                 "summary": "List user quotas",
-                "description": "Returns all user quotas for a specific filesystem.",
+                "description": "Lists the user quotas of a filesystem in the caller's tenant, one page at a time. To get the next page, pass the returned `next_token` in the next request. The filesystem must be ready.",
                 "operationId": "listUserQuotas",
                 "responses": {
                     "200": {
-                        "description": "",
+                        "description": "One page of user quotas, and the token for the next page.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -13763,20 +13828,24 @@
                                                     "total_bytes": {
                                                         "type": "integer",
                                                         "format": "int64",
+                                                        "description": "Capacity used by the user, data and metadata combined, in bytes.",
                                                         "example": 8192
                                                     },
                                                     "grace_seconds": {
                                                         "type": "number",
+                                                        "description": "Grace period after usage exceeds the soft limit, in seconds. `null` means the grace period is unlimited.",
                                                         "example": null
                                                     },
                                                     "hard_limit_bytes": {
                                                         "type": "integer",
                                                         "format": "int64",
+                                                        "description": "Hard limit, in bytes. `null` means no hard limit.",
                                                         "example": 1000001536
                                                     },
                                                     "soft_limit_bytes": {
                                                         "type": "integer",
                                                         "format": "int64",
+                                                        "description": "Soft limit, in bytes. `null` means no soft limit.",
                                                         "example": 0
                                                     }
                                                 }
@@ -13784,6 +13853,7 @@
                                         },
                                         "next_token": {
                                             "type": "number",
+                                            "description": "Token for the next page. `null` when this is the last page.",
                                             "example": 3214121
                                         }
                                     }
@@ -13800,7 +13870,7 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "The unique identifier of the filesystem."
+                        "description": "UID of the filesystem, as returned in the `uid` field of `GET /fileSystems`."
                     },
                     {
                         "in": "query",
@@ -13808,7 +13878,7 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "Token to get the next page."
+                        "description": "The `next_token` value from the previous response. Omit it to get the first page."
                     }
                 ]
             },
@@ -13817,11 +13887,11 @@
                     "Quota"
                 ],
                 "summary": "Set a user quota",
-                "description": "Sets or updates a quota for a specific user on a filesystem.",
+                "description": "Sets the quota of one user on a filesystem in the caller's tenant. Only the limits passed in the request change; omitted limits keep their current values.",
                 "operationId": "setUserQuota",
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "The user quota is set. `data` is `null`."
                     }
                 },
                 "parameters": [
@@ -13832,7 +13902,7 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "The unique identifier of the filesystem."
+                        "description": "UID of the filesystem, as returned in the `uid` field of `GET /fileSystems`."
                     },
                     {
                         "in": "query",
@@ -13841,7 +13911,7 @@
                         "schema": {
                             "type": "integer"
                         },
-                        "description": "The user ID (UID) to set a quota for."
+                        "description": "POSIX user ID (UID) to set the quota for."
                     },
                     {
                         "in": "query",
@@ -13850,7 +13920,7 @@
                             "type": "integer",
                             "format": "int64"
                         },
-                        "description": "Hard limit in bytes. 0 for unlimited."
+                        "description": "Hard limit, in bytes. `0` means no hard limit."
                     },
                     {
                         "in": "query",
@@ -13859,7 +13929,7 @@
                             "type": "integer",
                             "format": "int64"
                         },
-                        "description": "Soft limit in bytes. 0 for unlimited."
+                        "description": "Soft limit, in bytes. `0` means no soft limit."
                     },
                     {
                         "in": "query",
@@ -13867,7 +13937,7 @@
                         "schema": {
                             "type": "integer"
                         },
-                        "description": "Grace period in seconds after soft limit is exceeded."
+                        "description": "Grace period after usage exceeds the soft limit, in seconds. `0` or a negative value means an unlimited grace period."
                     }
                 ]
             },
@@ -13875,12 +13945,12 @@
                 "tags": [
                     "Quota"
                 ],
-                "summary": "Remove a user quota",
-                "description": "Removes the quota for a specific user on a filesystem.",
+                "summary": "Delete a user quota",
+                "description": "Removes the quota of one user on a filesystem in the caller's tenant by resetting its limits and grace period to unlimited.",
                 "operationId": "unsetUserQuota",
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "The user quota is removed. `data` is `null`."
                     }
                 },
                 "parameters": [
@@ -13891,7 +13961,7 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "The unique identifier of the filesystem."
+                        "description": "UID of the filesystem, as returned in the `uid` field of `GET /fileSystems`."
                     },
                     {
                         "in": "query",
@@ -13900,7 +13970,7 @@
                         "schema": {
                             "type": "integer"
                         },
-                        "description": "The user ID (UID) whose quota to remove."
+                        "description": "POSIX user ID (UID) whose quota to remove."
                     }
                 ]
             }
@@ -13910,12 +13980,12 @@
                 "tags": [
                     "Quota"
                 ],
-                "summary": "Get default user quota",
-                "description": "Returns the default quota applied to new users on a filesystem.",
+                "summary": "Get the default user quota",
+                "description": "Returns the default user quota of a filesystem in the caller's tenant. The default quota applies to new users.",
                 "operationId": "getDefaultUserQuota",
                 "responses": {
                     "200": {
-                        "description": "",
+                        "description": "The default user quota of the filesystem.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -13927,15 +13997,18 @@
                                                 "hard_limit_bytes": {
                                                     "type": "integer",
                                                     "format": "int64",
+                                                    "description": "Default hard limit, in bytes. `null` means no hard limit.",
                                                     "example": 1000001536
                                                 },
                                                 "soft_limit_bytes": {
                                                     "type": "integer",
                                                     "format": "int64",
+                                                    "description": "Default soft limit, in bytes. `null` means no soft limit.",
                                                     "example": 0
                                                 },
                                                 "grace_seconds": {
                                                     "type": "integer",
+                                                    "description": "Default grace period after usage exceeds the soft limit, in seconds. `null` means the grace period is unlimited.",
                                                     "example": null
                                                 }
                                             }
@@ -13954,7 +14027,7 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "The unique identifier of the filesystem."
+                        "description": "UID of the filesystem, as returned in the `uid` field of `GET /fileSystems`."
                     }
                 ]
             },
@@ -13962,12 +14035,12 @@
                 "tags": [
                     "Quota"
                 ],
-                "summary": "Set default user quota",
-                "description": "Sets the default quota applied to new users on a filesystem.",
+                "summary": "Set the default user quota",
+                "description": "Sets the default user quota of a filesystem in the caller's tenant. The default quota applies to new users. Only the limits passed in the request change; omitted limits keep their current values.",
                 "operationId": "setDefaultUserQuota",
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "The default user quota is set. `data` is `null`."
                     }
                 },
                 "parameters": [
@@ -13978,7 +14051,7 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "The unique identifier of the filesystem."
+                        "description": "UID of the filesystem, as returned in the `uid` field of `GET /fileSystems`."
                     },
                     {
                         "in": "query",
@@ -13987,7 +14060,7 @@
                             "type": "integer",
                             "format": "int64"
                         },
-                        "description": "Hard limit in bytes. 0 for unlimited."
+                        "description": "Hard limit, in bytes. `0` means no hard limit."
                     },
                     {
                         "in": "query",
@@ -13996,7 +14069,7 @@
                             "type": "integer",
                             "format": "int64"
                         },
-                        "description": "Soft limit in bytes. 0 for unlimited."
+                        "description": "Soft limit, in bytes. `0` means no soft limit."
                     },
                     {
                         "in": "query",
@@ -14004,7 +14077,7 @@
                         "schema": {
                             "type": "integer"
                         },
-                        "description": "Grace period in seconds after soft limit is exceeded."
+                        "description": "Grace period after usage exceeds the soft limit, in seconds. `0` or a negative value means an unlimited grace period."
                     }
                 ]
             },
@@ -14012,12 +14085,12 @@
                 "tags": [
                     "Quota"
                 ],
-                "summary": "Remove default user quota",
-                "description": "Removes the default user quota from a filesystem.",
+                "summary": "Delete the default user quota",
+                "description": "Removes the default user quota of a filesystem in the caller's tenant.",
                 "operationId": "unsetDefaultUserQuota",
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "The default user quota is removed. `data` is `null`."
                     }
                 },
                 "parameters": [
@@ -14028,7 +14101,7 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "The unique identifier of the filesystem."
+                        "description": "UID of the filesystem, as returned in the `uid` field of `GET /fileSystems`."
                     }
                 ]
             }
@@ -14039,11 +14112,11 @@
                     "Quota"
                 ],
                 "summary": "Enable user quota accounting",
-                "description": "Enables user quota accounting on a filesystem. This triggers a background coloring task to account for existing usage.",
+                "description": "Enables user quota accounting on a filesystem in the caller's tenant, and starts a background task that accounts for the existing usage of each user. The accounting status changes to `PARTIALLY_ACCOUNTED`; to check it, use `GET /fileSystems/{uid}/quota/user/status`. If the status is already `FULLY_ACCOUNTED`, the call changes nothing. The filesystem must be ready.",
                 "operationId": "enableUserQuotas",
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "User quota accounting is enabled. `data` is `null`."
                     }
                 },
                 "parameters": [
@@ -14054,7 +14127,7 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "The unique identifier of the filesystem."
+                        "description": "UID of the filesystem, as returned in the `uid` field of `GET /fileSystems`."
                     },
                     {
                         "in": "query",
@@ -14062,7 +14135,7 @@
                         "schema": {
                             "type": "boolean"
                         },
-                        "description": "Force enable even if already enabled."
+                        "description": "When `true`, enables user quotas even if not all containers in the cluster run version 5.1.2 or later. Defaults to `false`."
                     }
                 ]
             }
@@ -14073,11 +14146,11 @@
                     "Quota"
                 ],
                 "summary": "Disable user quota accounting",
-                "description": "Disables user quota accounting on a filesystem.",
+                "description": "Disables user quota accounting on a filesystem in the caller's tenant. The accounting status changes to `NONE`, and a running accounting task for the filesystem stops. The filesystem must be ready.",
                 "operationId": "disableUserQuotas",
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "User quota accounting is disabled. `data` is `null`."
                     }
                 },
                 "parameters": [
@@ -14088,7 +14161,7 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "The unique identifier of the filesystem."
+                        "description": "UID of the filesystem, as returned in the `uid` field of `GET /fileSystems`."
                     }
                 ]
             }
@@ -14099,11 +14172,11 @@
                     "Quota"
                 ],
                 "summary": "Get user quota accounting status",
-                "description": "Returns the user quota accounting state for a filesystem.",
+                "description": "Returns the user quota accounting status of a filesystem in the caller's tenant.",
                 "operationId": "getUserQuotasStatus",
                 "responses": {
                     "200": {
-                        "description": "",
+                        "description": "The accounting status. `NONE` means that user quota accounting is disabled. `PARTIALLY_ACCOUNTED` means that accounting is enabled and the task that accounts for existing usage has not finished. `FULLY_ACCOUNTED` means that all usage is accounted.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -14132,7 +14205,7 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "The unique identifier of the filesystem."
+                        "description": "UID of the filesystem, as returned in the `uid` field of `GET /fileSystems`."
                     }
                 ]
             }
@@ -14143,11 +14216,11 @@
                     "Quota"
                 ],
                 "summary": "List group quotas",
-                "description": "Returns all group quotas for a specific filesystem.",
+                "description": "Lists the group quotas of a filesystem in the caller's tenant, one page at a time. To get the next page, pass the returned `next_token` in the next request. The filesystem must be ready.",
                 "operationId": "listGroupQuotas",
                 "responses": {
                     "200": {
-                        "description": "",
+                        "description": "One page of group quotas, and the token for the next page.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -14165,20 +14238,24 @@
                                                     "total_bytes": {
                                                         "type": "integer",
                                                         "format": "int64",
+                                                        "description": "Capacity used by the group, data and metadata combined, in bytes.",
                                                         "example": 8192
                                                     },
                                                     "grace_seconds": {
                                                         "type": "number",
+                                                        "description": "Grace period after usage exceeds the soft limit, in seconds. `null` means the grace period is unlimited.",
                                                         "example": null
                                                     },
                                                     "hard_limit_bytes": {
                                                         "type": "integer",
                                                         "format": "int64",
+                                                        "description": "Hard limit, in bytes. `null` means no hard limit.",
                                                         "example": 1000001536
                                                     },
                                                     "soft_limit_bytes": {
                                                         "type": "integer",
                                                         "format": "int64",
+                                                        "description": "Soft limit, in bytes. `null` means no soft limit.",
                                                         "example": 0
                                                     }
                                                 }
@@ -14186,6 +14263,7 @@
                                         },
                                         "next_token": {
                                             "type": "number",
+                                            "description": "Token for the next page. `null` when this is the last page.",
                                             "example": 3214121
                                         }
                                     }
@@ -14202,7 +14280,7 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "The unique identifier of the filesystem."
+                        "description": "UID of the filesystem, as returned in the `uid` field of `GET /fileSystems`."
                     },
                     {
                         "in": "query",
@@ -14210,7 +14288,7 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "Token to get the next page."
+                        "description": "The `next_token` value from the previous response. Omit it to get the first page."
                     }
                 ]
             },
@@ -14219,11 +14297,11 @@
                     "Quota"
                 ],
                 "summary": "Set a group quota",
-                "description": "Sets or updates a quota for a specific group on a filesystem.",
+                "description": "Sets the quota of one group on a filesystem in the caller's tenant. Only the limits passed in the request change; omitted limits keep their current values.",
                 "operationId": "setGroupQuota",
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "The group quota is set. `data` is `null`."
                     }
                 },
                 "parameters": [
@@ -14234,7 +14312,7 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "The unique identifier of the filesystem."
+                        "description": "UID of the filesystem, as returned in the `uid` field of `GET /fileSystems`."
                     },
                     {
                         "in": "query",
@@ -14243,7 +14321,7 @@
                         "schema": {
                             "type": "integer"
                         },
-                        "description": "The group ID (GID) to set a quota for."
+                        "description": "POSIX group ID (GID) to set the quota for."
                     },
                     {
                         "in": "query",
@@ -14252,7 +14330,7 @@
                             "type": "integer",
                             "format": "int64"
                         },
-                        "description": "Hard limit in bytes. 0 for unlimited."
+                        "description": "Hard limit, in bytes. `0` means no hard limit."
                     },
                     {
                         "in": "query",
@@ -14261,7 +14339,7 @@
                             "type": "integer",
                             "format": "int64"
                         },
-                        "description": "Soft limit in bytes. 0 for unlimited."
+                        "description": "Soft limit, in bytes. `0` means no soft limit."
                     },
                     {
                         "in": "query",
@@ -14269,7 +14347,7 @@
                         "schema": {
                             "type": "integer"
                         },
-                        "description": "Grace period in seconds after soft limit is exceeded."
+                        "description": "Grace period after usage exceeds the soft limit, in seconds. `0` or a negative value means an unlimited grace period."
                     }
                 ]
             },
@@ -14277,12 +14355,12 @@
                 "tags": [
                     "Quota"
                 ],
-                "summary": "Remove a group quota",
-                "description": "Removes the quota for a specific group on a filesystem.",
+                "summary": "Delete a group quota",
+                "description": "Removes the quota of one group on a filesystem in the caller's tenant by resetting its limits and grace period to unlimited.",
                 "operationId": "unsetGroupQuota",
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "The group quota is removed. `data` is `null`."
                     }
                 },
                 "parameters": [
@@ -14293,7 +14371,7 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "The unique identifier of the filesystem."
+                        "description": "UID of the filesystem, as returned in the `uid` field of `GET /fileSystems`."
                     },
                     {
                         "in": "query",
@@ -14302,7 +14380,7 @@
                         "schema": {
                             "type": "integer"
                         },
-                        "description": "The group ID (GID) whose quota to remove."
+                        "description": "POSIX group ID (GID) whose quota to remove."
                     }
                 ]
             }
@@ -14312,12 +14390,12 @@
                 "tags": [
                     "Quota"
                 ],
-                "summary": "Get default group quota",
-                "description": "Returns the default quota applied to new groups on a filesystem.",
+                "summary": "Get the default group quota",
+                "description": "Returns the default group quota of a filesystem in the caller's tenant. The default quota applies to new groups.",
                 "operationId": "getDefaultGroupQuota",
                 "responses": {
                     "200": {
-                        "description": "",
+                        "description": "The default group quota of the filesystem.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -14329,15 +14407,18 @@
                                                 "hard_limit_bytes": {
                                                     "type": "integer",
                                                     "format": "int64",
+                                                    "description": "Default hard limit, in bytes. `null` means no hard limit.",
                                                     "example": 1000001536
                                                 },
                                                 "soft_limit_bytes": {
                                                     "type": "integer",
                                                     "format": "int64",
+                                                    "description": "Default soft limit, in bytes. `null` means no soft limit.",
                                                     "example": 0
                                                 },
                                                 "grace_seconds": {
                                                     "type": "integer",
+                                                    "description": "Default grace period after usage exceeds the soft limit, in seconds. `null` means the grace period is unlimited.",
                                                     "example": null
                                                 }
                                             }
@@ -14356,7 +14437,7 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "The unique identifier of the filesystem."
+                        "description": "UID of the filesystem, as returned in the `uid` field of `GET /fileSystems`."
                     }
                 ]
             },
@@ -14364,12 +14445,12 @@
                 "tags": [
                     "Quota"
                 ],
-                "summary": "Set default group quota",
-                "description": "Sets the default quota applied to new groups on a filesystem.",
+                "summary": "Set the default group quota",
+                "description": "Sets the default group quota of a filesystem in the caller's tenant. The default quota applies to new groups. Only the limits passed in the request change; omitted limits keep their current values.",
                 "operationId": "setDefaultGroupQuota",
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "The default group quota is set. `data` is `null`."
                     }
                 },
                 "parameters": [
@@ -14380,7 +14461,7 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "The unique identifier of the filesystem."
+                        "description": "UID of the filesystem, as returned in the `uid` field of `GET /fileSystems`."
                     },
                     {
                         "in": "query",
@@ -14389,7 +14470,7 @@
                             "type": "integer",
                             "format": "int64"
                         },
-                        "description": "Hard limit in bytes. 0 for unlimited."
+                        "description": "Hard limit, in bytes. `0` means no hard limit."
                     },
                     {
                         "in": "query",
@@ -14398,7 +14479,7 @@
                             "type": "integer",
                             "format": "int64"
                         },
-                        "description": "Soft limit in bytes. 0 for unlimited."
+                        "description": "Soft limit, in bytes. `0` means no soft limit."
                     },
                     {
                         "in": "query",
@@ -14406,7 +14487,7 @@
                         "schema": {
                             "type": "integer"
                         },
-                        "description": "Grace period in seconds after soft limit is exceeded."
+                        "description": "Grace period after usage exceeds the soft limit, in seconds. `0` or a negative value means an unlimited grace period."
                     }
                 ]
             },
@@ -14414,12 +14495,12 @@
                 "tags": [
                     "Quota"
                 ],
-                "summary": "Remove default group quota",
-                "description": "Removes the default group quota from a filesystem.",
+                "summary": "Delete the default group quota",
+                "description": "Removes the default group quota of a filesystem in the caller's tenant.",
                 "operationId": "unsetDefaultGroupQuota",
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "The default group quota is removed. `data` is `null`."
                     }
                 },
                 "parameters": [
@@ -14430,7 +14511,7 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "The unique identifier of the filesystem."
+                        "description": "UID of the filesystem, as returned in the `uid` field of `GET /fileSystems`."
                     }
                 ]
             }
@@ -14440,12 +14521,12 @@
                 "tags": [
                     "Filesystem"
                 ],
-                "summary": "Detach object store bucket from filesystem",
-                "description": "Disconnects an object store bucket from a filesystem, separating their data access.",
+                "summary": "Detach an object store bucket",
+                "description": "Starts detaching an object store bucket from a filesystem in the caller's tenant, as a background task. The response contains the ID of that task.",
                 "operationId": "detachObsBucketFromFS",
                 "responses": {
                     "200": {
-                        "description": "",
+                        "description": "The detach task was started. `data` contains the task ID.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -14454,7 +14535,7 @@
                                         "data": {
                                             "type": "string",
                                             "example": "CWTaskId<278>",
-                                            "description": "Detach task ID."
+                                            "description": "ID of the background task that detaches the bucket."
                                         }
                                     }
                                 }
@@ -14479,7 +14560,7 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "Filesystem UID."
+                        "description": "UID of the filesystem, as returned in the `uid` field of `GET /fileSystems`."
                     },
                     {
                         "in": "path",
@@ -14488,7 +14569,7 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "Object store system UID."
+                        "description": "UID of the object store bucket to detach."
                     }
                 ]
             }
@@ -14498,12 +14579,12 @@
                 "tags": [
                     "Filesystem"
                 ],
-                "summary": "Download filesystem from object store",
-                "description": "Creates a new filesystem based on a saved snapshot stored in an object store bucket.",
+                "summary": "Download a filesystem from an object store",
+                "description": "Creates a new filesystem in the caller's tenant from a snapshot that was uploaded to an object store bucket. The snapshot is identified by its `locator` in the bucket.",
                 "operationId": "downloadFS",
                 "responses": {
                     "200": {
-                        "description": "",
+                        "description": "The filesystem that was created for the download.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -14541,83 +14622,85 @@
                                 "properties": {
                                     "name": {
                                         "type": "string",
-                                        "description": "New filesystem name.",
-                                        "example": "new_fs"
+                                        "description": "Name of the new filesystem.",
+                                        "example": "projects-restored"
                                     },
                                     "group_name": {
                                         "type": "string",
-                                        "description": "Group name.",
+                                        "description": "Name of the filesystem group that the new filesystem belongs to.",
                                         "example": "default"
                                     },
                                     "total_capacity": {
                                         "type": "integer",
                                         "format": "int64",
                                         "example": 10000000000,
-                                        "description": "Total capacity (format - Capacity in decimal or binary units - 11B, 1KB, 1MB, 1GB, 1TB, 1PB, 1EB, 1KiB, 1MiB, 1GiB, 1TiB, 1PiB, 1EiB)."
+                                        "description": "Total capacity of the new filesystem, in bytes."
                                     },
                                     "object_storage": {
                                         "type": "string",
-                                        "description": "Object Store name.",
-                                        "example": "obs1"
+                                        "description": "Name of the object store bucket that holds the uploaded snapshot.",
+                                        "example": "obs-bucket-1"
                                     },
                                     "locator": {
                                         "type": "string",
-                                        "description": "Locator.",
+                                        "description": "Locator of the uploaded snapshot in the object store bucket.",
                                         "example": "bba696fb/d/s/4/spec/fc35-4d51-96b6-028488d349dc"
                                     },
                                     "ssd_capacity": {
                                         "type": "integer",
                                         "format": "int64",
                                         "example": 10000000000,
-                                        "description": "SSD capacity (format - Capacity in decimal or binary units - 11B, 1KB, 1MB, 1GB, 1TB, 1PB, 1EB, 1KiB, 1MiB, 1GiB, 1TiB, 1PiB, 1EiB)."
+                                        "description": "SSD capacity of the new filesystem, in bytes."
                                     },
                                     "auth_required": {
                                         "type": "boolean",
                                         "example": true,
-                                        "description": "Require the mounting user to be authenticated for mounting this filesystem. This flag is only effective in the root organization; users in non-root organizations must be authenticated to perform a mount operation."
+                                        "description": "When `true`, only an authenticated user can mount the filesystem. Defaults to `false` in the root tenant and to `true` in other tenants. In a tenant other than the root tenant, it cannot be set to `false`."
                                     },
                                     "additional_object_storage": {
                                         "type": "string",
-                                        "example": "obs2",
-                                        "description": "Additional object Store name."
+                                        "example": "obs-bucket-2",
+                                        "description": "Name of an additional object store bucket."
                                     },
                                     "snapshot_name": {
                                         "type": "string",
-                                        "example": "snapName"
+                                        "example": "weekly-backup",
+                                        "description": "Name of the snapshot to create for the downloaded data in the new filesystem."
                                     },
                                     "access_point": {
                                         "type": "string",
-                                        "example": "111d3"
+                                        "example": "weekly-backup",
+                                        "description": "Access point of the snapshot to create for the downloaded data."
                                     },
                                     "kms_vault_key_identifier": {
                                         "type": "string",
                                         "example": "weka_fs_key1",
-                                        "description": "Key identifier to encrypt the filesystem key."
+                                        "description": "Identifier of the HashiCorp Vault key that encrypts the filesystem key."
                                     },
                                     "kms_vault_namespace": {
                                         "type": "string",
                                         "example": "namespace1",
-                                        "description": "Namespace in which the key is created."
+                                        "description": "HashiCorp Vault namespace that contains the key."
                                     },
                                     "kms_vault_role_id": {
                                         "type": "string",
                                         "example": "d4b9fcf3-8fae-4f2d-b9ae-4899aff66fe8",
-                                        "description": "Role Identifier that has access to the specified key."
+                                        "description": "HashiCorp Vault role ID that has access to the key. Set it together with `kms_vault_secret_id`."
                                     },
                                     "kms_vault_secret_id": {
                                         "type": "string",
                                         "example": "b99052e6-8bf1-4f0a-a3d0-969f90698d28",
-                                        "description": "Secret identifier to access the key for the specified role."
+                                        "description": "HashiCorp Vault secret ID for the role in `kms_vault_role_id`. Set it together with `kms_vault_role_id`."
                                     },
                                     "audit": {
                                         "type": "boolean",
                                         "example": true,
-                                        "description": "Enable audit logging."
+                                        "description": "When `true`, enables audit logging for the new filesystem."
                                     },
                                     "audit_open_close": {
                                         "type": "boolean",
                                         "example": true,
-                                        "description": "Enable audit logging for Open/Close operation."
+                                        "description": "When `true`, audit logging also records open and close operations."
                                     }
                                 }
                             }
@@ -14631,12 +14714,12 @@
                 "tags": [
                     "Filesystem"
                 ],
-                "summary": "Get thin-provisioning reserve status",
-                "description": "Returns the existing allocated thin-provisioning space reserved for your organization within the cluster.",
+                "summary": "List thin-provisioning reserves",
+                "description": "Lists tenants with the SSD capacity reserved for their thin-provisioned filesystems.",
                 "operationId": "getFileSystemsThinProvisionReserveStatus",
                 "responses": {
                     "200": {
-                        "description": "",
+                        "description": "An array with one object for each tenant, including its `ssd_reserve`.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -14664,8 +14747,8 @@
                 "tags": [
                     "Filesystem"
                 ],
-                "summary": "Set thin-provisioning reserve",
-                "description": "Sets the thin-provisioning space for your organization's filesystems.",
+                "summary": "Set the thin-provisioning reserve of a tenant",
+                "description": "Sets the SSD capacity reserved for the thin-provisioned filesystems of a tenant. A Tenant Admin can set the reserve of their own tenant; a Cluster Admin can set it for any tenant.",
                 "operationId": "setFileSystemsThinProvisionReserve",
                 "parameters": [
                     {
@@ -14675,7 +14758,7 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "Organization UID to set the thin-provisioning space."
+                        "description": "UID of the tenant, as returned in the `uid` field of `GET /fileSystems/thinProvisionReserve`."
                     }
                 ],
                 "requestBody": {
@@ -14691,7 +14774,7 @@
                                     "ssd_capacity": {
                                         "type": "integer",
                                         "format": "int64",
-                                        "description": "SSD Capacity to reserve.",
+                                        "description": "SSD capacity to reserve, in bytes.",
                                         "example": 1073741824
                                     }
                                 }
@@ -14701,7 +14784,7 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "",
+                        "description": "The reserve is set.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -14724,8 +14807,8 @@
                 "tags": [
                     "Filesystem"
                 ],
-                "summary": "Remove thin-provisioning reserve",
-                "description": "Removes the existing reserved thin-provisioning space allocated for your organization's filesystems.",
+                "summary": "Delete the thin-provisioning reserve of a tenant",
+                "description": "Removes the SSD capacity reserved for the thin-provisioned filesystems of a tenant. A Tenant Admin can remove the reserve of their own tenant; a Cluster Admin can remove it for any tenant.",
                 "operationId": "deleteFileSystemsThinProvisionReserve",
                 "parameters": [
                     {
@@ -14735,12 +14818,12 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "Organization UID."
+                        "description": "UID of the tenant, as returned in the `uid` field of `GET /fileSystems/thinProvisionReserve`."
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "",
+                        "description": "The reserve is removed.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -14765,12 +14848,12 @@
                 "tags": [
                     "Quota"
                 ],
-                "summary": "Resolve path to inode ID",
-                "description": "Returns the unique inode ID for a specified file or directory path.",
+                "summary": "Resolve a path to an inode ID",
+                "description": "Returns the inode ID of a path in a filesystem of the caller's tenant. Use the returned `inode_id` as the `inode_id` path parameter of the directory quota operations.",
                 "operationId": "resolvePath",
                 "responses": {
                     "200": {
-                        "description": "",
+                        "description": "The inode ID of the path.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -14781,7 +14864,8 @@
                                             "properties": {
                                                 "inode_id": {
                                                     "type": "string",
-                                                    "example": 1468752432114565000
+                                                    "description": "Inode ID of the path, as a decimal string.",
+                                                    "example": "1468752432114565121"
                                                 }
                                             }
                                         }
@@ -14800,7 +14884,7 @@
                     "schema": {
                         "type": "string"
                     },
-                    "description": "Filesystem UID."
+                    "description": "UID of the filesystem, as returned in the `uid` field of `GET /fileSystems`."
                 },
                 {
                     "in": "query",
@@ -14809,7 +14893,7 @@
                     "schema": {
                         "type": "string"
                     },
-                    "description": "Path within the filesystem."
+                    "description": "Path within the filesystem, starting at the filesystem root, for example `/research/genomics`."
                 }
             ]
         },
@@ -14818,12 +14902,12 @@
                 "tags": [
                     "Filesystem"
                 ],
-                "summary": "Remove all security policies from a filesystem",
-                "description": "Detaches all security policies from a specific filesystem.",
+                "summary": "Detach all security policies from a filesystem",
+                "description": "Detaches all security policies from a filesystem in the caller's tenant.",
                 "operationId": "resetFsSecurityPolicies",
                 "responses": {
                     "200": {
-                        "description": "",
+                        "description": "The security policies attached to the filesystem after the change, which is an empty list.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -14855,9 +14939,9 @@
                         "schema": {
                             "type": "string",
                             "format": "uuid",
-                            "example": "00000000-0000-0000-0000-000000000000"
+                            "example": "3f6c1a2e-8b4d-4e7a-9c5f-1d2e3a4b5c6d"
                         },
-                        "description": "Filesystem UID."
+                        "description": "UID of the filesystem, as returned in the `uid` field of `GET /fileSystems`."
                     }
                 ]
             },
@@ -14865,12 +14949,12 @@
                 "tags": [
                     "Filesystem"
                 ],
-                "summary": "Get security policies for a filesystem",
-                "description": "Returns a list of all security policies attached to a specific filesystem.",
+                "summary": "List the security policies of a filesystem",
+                "description": "Lists the security policies attached to a filesystem in the caller's tenant.",
                 "operationId": "getFsSecurityPolicies",
                 "responses": {
                     "200": {
-                        "description": "",
+                        "description": "The security policies attached to the filesystem.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -14902,9 +14986,9 @@
                         "schema": {
                             "type": "string",
                             "format": "uuid",
-                            "example": "00000000-0000-0000-0000-000000000000"
+                            "example": "3f6c1a2e-8b4d-4e7a-9c5f-1d2e3a4b5c6d"
                         },
-                        "description": "Filesystem UID."
+                        "description": "UID of the filesystem, as returned in the `uid` field of `GET /fileSystems`."
                     }
                 ]
             },
@@ -14912,12 +14996,12 @@
                 "tags": [
                     "Filesystem"
                 ],
-                "summary": "Set filesystem security policies",
-                "description": "Replaces all security policies on a filesystem with a new, specified set of policies.",
+                "summary": "Set the security policies of a filesystem",
+                "description": "Replaces the security policies attached to a filesystem in the caller's tenant with the policies in the request. The list cannot contain the same policy twice.",
                 "operationId": "setFsSecurityPolicies",
                 "responses": {
                     "200": {
-                        "description": "",
+                        "description": "The security policies attached to the filesystem after the change.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -14948,12 +15032,12 @@
                                 "type": "object",
                                 "properties": {
                                     "policies": {
-                                        "description": "Security policies to set for the filesystem.",
+                                        "description": "UIDs of the security policies to attach to the filesystem, replacing the current ones.",
                                         "type": "array",
                                         "items": {
                                             "type": "string",
                                             "format": "uuid",
-                                            "example": "00000000-0000-0000-0000-000000000000"
+                                            "example": "7a1e4c9b-2d3f-4b8a-a6e5-0f1c2d3e4b5a"
                                         }
                                     }
                                 }
@@ -14969,9 +15053,9 @@
                         "schema": {
                             "type": "string",
                             "format": "uuid",
-                            "example": "00000000-0000-0000-0000-000000000000"
+                            "example": "3f6c1a2e-8b4d-4e7a-9c5f-1d2e3a4b5c6d"
                         },
-                        "description": "Filesystem UID."
+                        "description": "UID of the filesystem, as returned in the `uid` field of `GET /fileSystems`."
                     }
                 ]
             }
@@ -14982,11 +15066,11 @@
                     "Filesystem"
                 ],
                 "summary": "Attach security policies to a filesystem",
-                "description": "Adds one or more security policies to a filesystem's existing policy list.",
+                "description": "Adds one or more security policies to the policies attached to a filesystem in the caller's tenant.",
                 "operationId": "attachFsSecurityPolicies",
                 "responses": {
                     "200": {
-                        "description": "",
+                        "description": "The security policies attached to the filesystem after the change.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -15017,12 +15101,12 @@
                                 "type": "object",
                                 "properties": {
                                     "policies": {
-                                        "description": "Security policies to set for filesystem.",
+                                        "description": "UIDs of the security policies to attach.",
                                         "type": "array",
                                         "items": {
                                             "type": "string",
                                             "format": "uuid",
-                                            "example": "00000000-0000-0000-0000-000000000000"
+                                            "example": "7a1e4c9b-2d3f-4b8a-a6e5-0f1c2d3e4b5a"
                                         }
                                     }
                                 }
@@ -15039,8 +15123,8 @@
                             "type": "string",
                             "format": "uuid"
                         },
-                        "description": "Filesystem UID.",
-                        "example": "00000000-0000-0000-0000-000000000000"
+                        "description": "UID of the filesystem, as returned in the `uid` field of `GET /fileSystems`.",
+                        "example": "3f6c1a2e-8b4d-4e7a-9c5f-1d2e3a4b5c6d"
                     }
                 ]
             }
@@ -15051,11 +15135,11 @@
                     "Filesystem"
                 ],
                 "summary": "Detach security policies from a filesystem",
-                "description": "Removes one or more specified security policies from a filesystem.",
+                "description": "Removes one or more security policies from the policies attached to a filesystem in the caller's tenant.",
                 "operationId": "detachFsSecurityPolicies",
                 "responses": {
                     "200": {
-                        "description": "",
+                        "description": "The security policies attached to the filesystem after the change.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -15086,12 +15170,12 @@
                                 "type": "object",
                                 "properties": {
                                     "policies": {
-                                        "description": "Security policies to set for filesystem.",
+                                        "description": "UIDs of the security policies to detach.",
                                         "type": "array",
                                         "items": {
                                             "type": "string",
                                             "format": "uuid",
-                                            "example": "00000000-0000-0000-0000-000000000000"
+                                            "example": "7a1e4c9b-2d3f-4b8a-a6e5-0f1c2d3e4b5a"
                                         }
                                     }
                                 }
@@ -15108,8 +15192,8 @@
                             "type": "string",
                             "format": "uuid"
                         },
-                        "description": "Filesystem UID.",
-                        "example": "00000000-0000-0000-0000-000000000000"
+                        "description": "UID of the filesystem, as returned in the `uid` field of `GET /fileSystems`.",
+                        "example": "3f6c1a2e-8b4d-4e7a-9c5f-1d2e3a4b5c6d"
                     }
                 ]
             }
@@ -15119,12 +15203,12 @@
                 "tags": [
                     "Filesystem"
                 ],
-                "summary": "Get available space in an organization",
-                "description": "Returns the total unprovisioned and reclaimable SSD space available for new or existing filesystems within the user's organization.",
+                "summary": "Get the free SSD space of the tenant",
+                "description": "Returns the SSD capacity of the caller's tenant that is not provisioned to any filesystem, and the SSD capacity that can be reclaimed from thin-provisioned filesystems.",
                 "operationId": "getFreeSpaceInOrg",
                 "responses": {
                     "200": {
-                        "description": "",
+                        "description": "The unprovisioned and reclaimable SSD capacity of the caller's tenant.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -15133,13 +15217,13 @@
                                         "unprovisionedSpace": {
                                             "type": "integer",
                                             "format": "int64",
-                                            "description": "Unprovisioned space in bytes.",
+                                            "description": "SSD capacity of the tenant that is not provisioned to any filesystem, in bytes.",
                                             "example": 1073741824
                                         },
                                         "reclaimableSpace": {
                                             "type": "integer",
                                             "format": "int64",
-                                            "description": "Reclaimable space in bytes. 0 is if thin provisioning is disabled.",
+                                            "description": "SSD capacity that can be reclaimed from thin-provisioned filesystems of the tenant, in bytes. `0` when thin provisioning is disabled or no filesystem is thin-provisioned.",
                                             "example": 536870912
                                         }
                                     }
