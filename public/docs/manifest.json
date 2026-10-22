@@ -14,5 +14,13 @@
     "generated_at": "2026-10-19T18:50:12Z",
     "published_by": "demianweka",
     "run_url": "https://github.com/weka/wekapp/actions/runs/39305791005"
+  },
+  "6.0": {
+    "ref": "REL/6.0.1",
+    "wekapp_sha": "23f04b44742fd25625122ed062f45a3eaccdcabb",
+    "swagger_jsdoc": "6.2.8",
+    "generated_at": "2026-10-22T06:37:15Z",
+    "published_by": "ari-attias (local build, workflow steps 2-4)",
+    "run_url": ""
   }
 }
