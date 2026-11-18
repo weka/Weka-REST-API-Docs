@@ -24,3 +24,11 @@
     "run_url": ""
   }
 }
+"6.1": {
+  "ref": "REL/6.1.0",
+  "wekapp_sha": "f2a9a1a110d85250160eb3d30c73085680e19050",
+  "swagger_jsdoc": "6.2.8",
+  "generated_at": "2026-11-18T16:58:49Z",
+  "published_by": "ari-attias (local build, workflow steps 2-4)",
+  "run_url": ""
+}
