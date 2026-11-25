@@ -8,12 +8,12 @@
     "run_url": "https://github.com/weka/wekapp/actions/runs/31298559444"
   },
   "5.1": {
-    "ref": "REL/5.1.42",
-    "wekapp_sha": "60077ac97b51515e7789ad1ef789fc2e239b1382",
+    "ref": "REL/5.1.50",
+    "wekapp_sha": "826b2c99638cbe76b9da73bc4862a2db3fb83b70",
     "swagger_jsdoc": "6.2.8",
-    "generated_at": "2026-10-19T18:50:12Z",
-    "published_by": "demianweka",
-    "run_url": "https://github.com/weka/wekapp/actions/runs/39305791005"
+    "generated_at": "2026-11-25T10:31:39Z",
+    "published_by": "ari-attias (local build, workflow steps 2-4)",
+    "run_url": ""
   },
   "6.0": {
     "ref": "REL/6.0.1",
@@ -22,13 +22,13 @@
     "generated_at": "2026-10-22T06:37:15Z",
     "published_by": "ari-attias (local build, workflow steps 2-4)",
     "run_url": ""
+  },
+  "6.1": {
+    "ref": "REL/6.1.0",
+    "wekapp_sha": "f2a9a1a110d85250160eb3d30c73085680e19050",
+    "swagger_jsdoc": "6.2.8",
+    "generated_at": "2026-11-18T16:58:49Z",
+    "published_by": "ari-attias (local build, workflow steps 2-4)",
+    "run_url": ""
   }
-}
-"6.1": {
-  "ref": "REL/6.1.0",
-  "wekapp_sha": "f2a9a1a110d85250160eb3d30c73085680e19050",
-  "swagger_jsdoc": "6.2.8",
-  "generated_at": "2026-11-18T16:58:49Z",
-  "published_by": "ari-attias (local build, workflow steps 2-4)",
-  "run_url": ""
 }
