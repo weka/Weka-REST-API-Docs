@@ -1,0 +1,9 @@
+/src/              @weka/services-front-end
+/public/           @weka/services-front-end
+/package.json      @weka/services-front-end
+/yarn.lock         @weka/services-front-end
+/vite.config.js    @weka/services-front-end
+/index.html        @weka/services-front-end
+/.nvmrc            @weka/services-front-end
+/.gitignore        @weka/services-front-end
+/README.md         @weka/services-front-end
