@@ -1,5 +1,6 @@
 import SwaggerUI from "swagger-ui";
 import SwaggerUIStandalonePreset from "swagger-ui/dist/swagger-ui-standalone-preset";
+import apiSearchFilterPlugin from "./apiSearchFilterPlugin";
 
 import "swagger-ui/dist/swagger-ui.css";
 import "./main.css";
@@ -21,7 +22,7 @@ SwaggerUI({
   "urls.primaryName": "6.1",
   deepLinking: true,
   presets: [SwaggerUI.presets.apis, SwaggerUIStandalonePreset],
-  plugins: [SwaggerUI.plugins.DownloadUrl].filter(
+  plugins: [SwaggerUI.plugins.DownloadUrl, apiSearchFilterPlugin].filter(
     (plugin) => plugin !== SwaggerUI.plugins.Auth
   ),
   layout: "StandaloneLayout",
